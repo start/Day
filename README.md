@@ -52,7 +52,7 @@ Shout [Intensity, Text] -> Text
 天主是美！
 Number options
 | WholeNumber
-| Rational
+| RationalNumber
 
 天主事全的。
 WholeNumber options
@@ -60,7 +60,7 @@ WholeNumber options
 | any Integer128
 
 天主锋利！
-Rational options
+RationalNumber options
 | any FixedPoint32.32
 | any FixedPoint32.128
 | any FixedPoint128.32
