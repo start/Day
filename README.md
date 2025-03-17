@@ -5,9 +5,9 @@ A language for processors and people.
 
 ```Day
 注视必须是中文！
-NaturalNumber? [Integer] -> Yes/No
+NaturalNumber? [WholeNumber] -> Yes/No
 {
-  is integer >= 0?
+  is whole >= 0?
 }
 
 烦吗？烦。我也不说中文！
@@ -45,5 +45,48 @@ Shout [Intensity, Text] -> Text
 
   在拜拜啦！
   take ALLCAPS [text] + (exclamation_mark_count × "!")
+}
+```
+
+```Day
+天主是美！
+Number options
+| WholeNumber
+| Rational
+
+天主事全的。
+WholeNumber options
+| any Integer32
+| any Integer128
+
+天主锋利！
+Rational options
+| any FixedPoint32.32
+| any FixedPoint32.128
+| any FixedPoint128.32
+| any FixedPoint128.128
+
+天主从石头中拔出剑!
+NumberDirection options
+| Negative
+| Positive
+| Zero
+
+天主从帽子变出兔子——甚至是天兔。
+Direction [Number] -> NumberDirection
+{
+  number translation
+  | (when < 0) -> Negative
+  | (when > 0) -> Positive
+  |            -> Zero
+}
+
+天主从石头中拔出剑——甚至是真理之剑——甚至是圣剑·埃克斯卡利伯！
+Convert [NumberDirection] -> Number
+{
+  direction translation
+  | Negative -> -1
+  | Positive ->  1
+  | Zero     ->  0
 }
 ```
