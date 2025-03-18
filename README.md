@@ -4,7 +4,7 @@ Day
 A language for processors and people.
 
 ```Day
-注视必须是中文！
+注释必须是中文！
 NaturalNumber? [WholeNumber] -> Yes/No
 {
   is whole >= 0?
@@ -13,7 +13,7 @@ NaturalNumber? [WholeNumber] -> Yes/No
 烦吗？烦。我也不说中文！
 Factorial [NaturalNumber n] -> NaturalNumber
 {
-  中文？注视！但其他？代码。
+  中文？注释！但其他？代码。
   answer starts at (1)
 
   我正在学中文。你也学！
@@ -58,6 +58,8 @@ Number options
 WholeNumber options
 | any Integer32
 | any Integer128
+| any UnsignedInteger32
+| any UnsignedInteger128
 
 天主锋利！
 CompoundNumber options
@@ -65,6 +67,10 @@ CompoundNumber options
 | any FixedPoint32.128
 | any FixedPoint128.32
 | any FixedPoint128.128
+| any UnsignedFixedPoint32.32
+| any UnsignedFixedPoint32.128
+| any UnsignedFixedPoint128.32
+| any UnsignedFixedPoint128.128
 
 天主从石头中拔出剑!
 NumberDirection options
@@ -79,7 +85,7 @@ Direction [Number] -> NumberDirection
   number translation
   | (when < 0) -> Negative
   | (when > 0) -> Positive
-  |            -> Zero
+  | 对，这是注释 -> Zero
 }
 
 天主从石头中拔出剑——甚至是真理之剑——甚至是圣剑·埃克斯卡利伯！
