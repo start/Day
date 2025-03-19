@@ -60,7 +60,7 @@ WholeNumber options
 | any Integer128
 
 天主锋利！（浮点吓人的。）
-CompoundNumber option
+CompoundNumber options
 | any Compound32
 | any Compound128
 
