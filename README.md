@@ -93,7 +93,7 @@ Convert [NumberDirection] -> Number
 ```Day
 一只帝王蝶等两周在蛹里。
 一位帝王等两千年天国里。
-Constant values
+Trivia
 {
   他能飞，他能飞！然而，然而……
   Monarch butterfly
