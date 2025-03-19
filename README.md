@@ -58,19 +58,11 @@ Number options
 WholeNumber options
 | any Integer32
 | any Integer128
-| any UnsignedInteger32
-| any UnsignedInteger128
 
-天主锋利！
-CompoundNumber options
-| any FixedPoint32.32
-| any FixedPoint32.128
-| any FixedPoint128.32
-| any FixedPoint128.128
-| any UnsignedFixedPoint32.32
-| any UnsignedFixedPoint32.128
-| any UnsignedFixedPoint128.32
-| any UnsignedFixedPoint128.128
+天主锋利！（浮点吓人的。）
+CompoundNumber option
+| any Compound32
+| any Compound128
 
 天主从石头中拔出剑!
 NumberDirection options
@@ -81,7 +73,7 @@ NumberDirection options
 天主从帽子变出兔子——甚至是天兔。
 Direction [Number] -> NumberDirection
 {
-  天兔来自月国！月是石头。
+  天兔来自月国！月是石头，对不对？
   number translation
   | (when < 0) -> Negative
   | (when > 0) -> Positive
@@ -95,5 +87,22 @@ Convert [NumberDirection] -> Number
   | Negative -> -1
   | Positive ->  1
   | Zero     ->  0
+}
+```
+
+```Day
+一只帝王蝶等两周在蛹里。
+一位帝王等两千年天国里。
+Constant values
+{
+  他能飞，他能飞！然而，然而……
+  Monarch butterfly
+    Top speed = 12 Miles per Hour
+    Favorite foods = Goldenrod, Milkweed
+      
+  她会捉到他！她很快，快，快!
+  Painted lady butterfly
+    Top speed = 25 Miles per Hour
+    Favorite foods = Sunflower, Thistle
 }
 ```
