@@ -70,10 +70,10 @@ NumberDirection options
 | Positive
 | Zero
 
-天主从帽子变出兔子——甚至是天兔。
+天主从帽子变出兔子——甚至是月兔——甚至是天兔。
 Direction [Number] -> NumberDirection
 {
-  天兔来自月国！月是石头，对不对？
+  天兔是月国人！月是石头，对不对？
   number translation
   | (when < 0) -> Negative
   | (when > 0) -> Positive
