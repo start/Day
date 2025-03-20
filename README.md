@@ -106,3 +106,80 @@ Trivia
     Favorite foods = Sunflower, Thistle
 }
 ```
+
+```Day
+
+无方法。不允许方法。
+Vector2D attributes
+[
+  Number x
+  Number y
+]
+
+欢迎函数！
+Normalize [Vector2D] -> NormalizedVector2D
+{
+  看“自变量”吗？
+  translate Length [vector]
+  | 1, 0 -> vector
+  |      -> vector ÷ length
+}
+
+NormalizedVector2D? [Vector2D] -> Yes/No
+{
+  is Length [vector] == 1?
+}
+
+方括号，无大括号。
+DotProduct [Vector2D, Vector2D] -> Vector2D
+[
+  陶艺中，刻划重要！
+  x is (first::x × second::x)
+  y is (first::y × second::y)
+]
+
+因为×很可爱。
+operator (×) [Vector2D, Vector2D] -> Vector2D
+{
+  DotProduct [first, second]
+}
+
+operator (×) [Vector2D, Number "scalar"] -> Vector2D
+[
+  x is (vector::x × scalar)
+  y is (vector::y × scalar)
+]
+
+见上文！
+operator (÷) [Vector2D, NonZero "divisor"] -> Vector2D
+[
+  x is (vector::x ÷ divisor)
+  y is (vector::y ÷ divisor)
+]
+
+operator (+) [Vector2D, Vector2D] -> Vector2D
+[
+  x is (first::x + second::x)
+  y is (first::y + second::y)
+]
+
+operator (-) [Vector2D, Vector2D] -> Vector2D
+[
+  x is (first::x - second::x)
+  y is (first::y - second::y)
+]
+
+RealNumber? [Number] -> Yes/No
+{
+  is number >= 0?
+}
+
+Length[Vector2D] -> RealNumber
+{
+  拜拜！谨慎嵌套！
+  SquareRoot
+  [
+    Square [vector::x] + Square [vector::y]
+  ]
+}
+```
