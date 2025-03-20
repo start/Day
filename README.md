@@ -174,7 +174,7 @@ RealNumber? [Number] -> Yes/No
   is number >= 0?
 }
 
-Length[Vector2D] -> RealNumber
+Length [Vector2D] -> RealNumber
 {
   拜拜！谨慎嵌套！
   SquareRoot
