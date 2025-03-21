@@ -1,4 +1,4 @@
-Day
+Day 天
 ======
 
 A language for processors and people.
@@ -151,14 +151,14 @@ operator (×) [Vector2D, Vector2D] -> Vector2D
   DotProduct [first, second]
 }
 
-operator (×) [Vector2D, Number "scalar"] -> Vector2D
+operator (×) [Vector2D, Number scalar] -> Vector2D
 [
   x is (vector::x × scalar)
   y is (vector::y × scalar)
 ]
 
 见上文！
-operator (÷) [Vector2D, NonZero "divisor"] -> Vector2D
+operator (÷) [Vector2D, NonZero divisor] -> Vector2D
 [
   x is (vector::x ÷ divisor)
   y is (vector::y ÷ divisor)
