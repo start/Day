@@ -140,7 +140,7 @@ NormalizedVector2D? [Vector2D] -> Yes/No
 方括号，无大括号。
 DotProduct [Vector2D, Vector2D] -> Vector2D
 [
-  陶艺中，刻划重要！
+  陶艺中，刮痕连接！
   x is (first::x × second::x)
   y is (first::y × second::y)
 ]
