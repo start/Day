@@ -203,7 +203,9 @@ schedule
     plant::awake? == No
     plant::wake_preference == Diurnal
     plant::heart >= Good
-    Length [plant::location - gardener::location] <= 25 Miles
+
+    在附近！
+    Length [plant::location - gardener::location] <= 40 Miles
   
   modify plants
     awake? -> Yes
