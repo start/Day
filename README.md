@@ -3,7 +3,7 @@ Day
 
 A language for processors and people.
 
-* “Auto-variables” allow us to **unambiguously** refer to the value of any expression using a sensible name—without having to explicitly create a variable and bind it to the expression.
+* “Implicit variables” allow us to **unambiguously** refer to the value of any expression using a sensible name—without having to explicitly create a variable and bind it to the expression.
 * “Shelves” can store collections of similar items, just like in real life. Shelves are shared by all code, and their items represent the state of each program. _(Imagine a big, loving family all sharing a big, loving pantry.)_
 * A built-in “day/night cycle” keeps our programs well-organized and adorably predictable. State changes are batched together and applied together once the whole program has had a chance to examine the previous batch of changes. _(Each day, the big, loving family carefully prepares a feast. They all wait until sundown to start eating together!)_
 * Chinese is automatically interpreted as commentary, not as code itself. We can write commentary anywhere in our code without affecting the behavior of our programs.
@@ -126,7 +126,7 @@ Vector2D attributes
 欢迎函数！
 Normalize [Vector2D] -> NormalizedVector2D
 {
-  看“自变量”吗？
+  看「隐式变量」吗？
   translate Length [vector]
   | 1, 0 -> vector
   |      -> vector ÷ length
