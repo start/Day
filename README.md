@@ -201,25 +201,48 @@ schedule
   
   requirements
     plant::awake? == No
-    plant::wake_preference == Diurnal
+    plant::wake_cycle == Diurnal
     plant::heart >= Good
 
     在附近！
     Length [plant::location - gardener::location] <= 40 Miles
   
   modify plants
+    伸展啦，小植物呀！
     awake? -> Yes
     
-    我们重置xp的值。
-    xp -> Sum [::xp from matching gardeners] 「XP」是什么？经验值！
+    我们重置harvesters。
+    harvesters -> matching gardeners
+    
+    我们重置xp。
+    xp -> Sum [matching gardeners, each::xp] 「XP」是什么？经验值！
   
     我们不重置这些！
-    hp -> old ::hp + 1,000                   「HP」？生命值！
-    mp -> old ::mp + 10,000                  「MP」？魔法值！
-    pp -> old ::pp + 10,000,000              「PP」？祈祷值！
-    fp -> old ::fp + 10,000,000,000,000,000  「FP」？信心值！
+    hp -> old::hp + 1,000                    「HP」？生命值！
+    mp -> old::mp + 10,000                   「MP」？魔法值！
+    pp -> old::pp + 10,000,000               「PP」？祈祷值！
+    fp -> old::fp + 10,000,000,000,000,000   「FP」？信心值！
     
   modify gardeners
-    xp -> old ::xp + (100 × Count [matching plants])
+    xp -> old::xp + (100 × Count [matching plants])
+}
+```
+
+```Day
+没有中间吗？
+Goodness options
+| CartoonishlyBad
+| Bad
+| Good
+| CartoonishlyGood
+
+Convert [Goodness] -> Number
+{
+  这允许`plant::heart >= Good`
+  goodness translation
+  | CartoonishlyBad  -> -2
+  | Bad              -> -1
+  | Good             ->  1
+  | CartoonishlyGood ->  2  
 }
 ```
