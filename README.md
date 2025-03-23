@@ -3,9 +3,22 @@ Day
 
 A language for processors and people.
 
-* “Implicit variables” allow us to refer to the value of any expression or argument using a sensible name—a name that unambiguously identifies the reference.
+* “Implicit variables” allow us to refer to the value of any expression by name—without manually binding anything to a variable.
 
-  _In the first code sample, `whole` unambiguously refers to the `WholeNumber` argument._
+  ```Day
+  Normalize [Vector2D] -> NormalizedVector2D
+  {
+    看「隐式变量」吗？
+    translate Length [vector]
+    | 1, 0 -> vector
+    |      -> vector ÷ length
+  }
+  ```
+
+  Day recognizes any unambiguous name, such as the two  above:
+
+  * `vector` for the `Vector2D` argument
+  * `length` for the expression `Length [vector]`
 
 * “Shelves” can store collections of similar items, just like in real life. Shelves are shared by all code, and their items represent the state of each program.
 
