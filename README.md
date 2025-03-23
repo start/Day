@@ -1,4 +1,4 @@
-Day 天
+Day 
 ======
 
 A language for processors and people.
@@ -14,7 +14,7 @@ Welcome to Day. 早上好！欢迎来到天。
 注释必须是中文！
 NaturalNumber? [WholeNumber] -> Yes/No
 {
-  is whole >= 0?
+  whole >= 0?
 }
 
 烦吗？烦。我也不说中文！
@@ -134,18 +134,18 @@ Normalize [Vector2D] -> NormalizedVector2D
 
 NormalizedVector2D? [Vector2D] -> Yes/No
 {
-  is Length [vector] == 1?
+  Length [vector] == 1?
 }
 
 方括号，无大括号。
 DotProduct [Vector2D, Vector2D] -> Vector2D
 [
   陶艺中，刮痕连接！
-  x is (first::x × second::x)
-  y is (first::y × second::y)
+  x -> first::x × second::x
+  y -> first::y × second::y
 ]
 
-因为“×”很可爱。
+因为「×」很可爱。
 operator (×) [Vector2D, Vector2D] -> Vector2D
 {
   DotProduct [first, second]
@@ -153,32 +153,32 @@ operator (×) [Vector2D, Vector2D] -> Vector2D
 
 operator (×) [Vector2D, Number scalar] -> Vector2D
 [
-  x is (vector::x × scalar)
-  y is (vector::y × scalar)
+  x -> vector::x × scalar
+  y -> vector::y × scalar
 ]
 
 见上文！
 operator (÷) [Vector2D, NonZero divisor] -> Vector2D
 [
-  x is (vector::x ÷ divisor)
-  y is (vector::y ÷ divisor)
+  x -> vector::x ÷ divisor
+  y -> vector::y ÷ divisor
 ]
 
 operator (+) [Vector2D, Vector2D] -> Vector2D
 [
-  x is (first::x + second::x)
-  y is (first::y + second::y)
+  x -> first::x + second::x
+  y -> first::y + second::y
 ]
 
 operator (-) [Vector2D, Vector2D] -> Vector2D
 [
-  x is (first::x - second::x)
-  y is (first::y - second::y)
+  x -> first::x - second::x
+  y -> first::y - second::y
 ]
 
 RealNumber? [Number] -> Yes/No
 {
-  is number >= 0?
+  number >= 0?
 }
 
 Length [Vector2D] -> RealNumber
@@ -188,5 +188,36 @@ Length [Vector2D] -> RealNumber
   [
     Square [vector::x] + Square [vector::y]
   ]
+}
+```
+
+```Day
+早啊，植物！醒醒吧！
+schedule
+{
+  这些是架子。
+  search Plants
+  search Gardeners
+  
+  requirements
+    plant::awake? == No
+    plant::wake_preference == Diurnal
+    plant::heart >= Good
+    Length [plant::location - gardener::location] <= 25 Miles
+  
+  modify plants
+    awake? -> Yes
+    
+    我们重置xp的值。
+    xp -> Sum [::xp from matching gardeners] 「XP」？经验值！
+  
+    我们不重置这些！
+    hp -> old ::hp + 1,000                   「HP」是什么？生命值！
+    mp -> old ::mp + 10,000                  「MP」？魔法值！
+    pp -> old ::pp + 10,000,000              「PP」？祈祷值！
+    fp -> old ::fp + 10,000,000,000,000,000  「FP」？信心值！
+    
+  modify gardeners
+    xp -> old ::xp + (100 × Count [matching plants])
 }
 ```
