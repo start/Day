@@ -1,11 +1,20 @@
-Day 
+Day
 ======
 
 A language for processors and people.
 
-* “Implicit variables” allow us to **unambiguously** refer to the value of any expression using a sensible name—without having to explicitly create a variable and bind it to the expression.
-* “Shelves” can store collections of similar items, just like in real life. Shelves are shared by all code, and their items represent the state of each program. _(Imagine a big, loving family all sharing a big, loving pantry.)_
-* A built-in “day/night cycle” keeps our programs well-organized and adorably predictable. State changes are batched together and applied together once the whole program has had a chance to examine the previous batch of changes. _(Each day, the big, loving family carefully prepares a feast. They all wait until sundown to start eating together!)_
+* “Implicit variables” allow us to refer to the value of any expression or argument using a sensible name—a name that unambiguously identifies the reference.
+
+  _In the first code sample, `whole` unambiguously refers to the `WholeNumber` argument._
+
+* “Shelves” can store collections of similar items, just like in real life. Shelves are shared by all code, and their items represent the state of each program.
+
+  _Imagine a big, loving family all sharing a big, loving pantry._
+
+* A built-in “day/night cycle” keeps our programs well-organized and adorably predictable. State changes are batched together and applied together once the whole program has had a chance to examine the previous batch of changes.
+
+  _Each day, the big, loving family carefully prepares a feast. They all wait until sundown to start eating together!_
+
 * Chinese is automatically interpreted as commentary, not as code itself. We can write commentary anywhere in our code without affecting the behavior of our programs.
 
 Welcome to Day. 早上好！欢迎来到天。
