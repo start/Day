@@ -217,7 +217,7 @@ schedule
     Length [plant::location - gardener::location] <= 40 Miles
   
   modify plants
-    伸展啦，小植物呀！
+    伸展啦，小苗苗！
     awake? -> Yes
     
     我们重置harvesters。
