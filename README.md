@@ -211,10 +211,10 @@ schedule
     awake? -> Yes
     
     我们重置xp的值。
-    xp -> Sum [::xp from matching gardeners] 「XP」？经验值！
+    xp -> Sum [::xp from matching gardeners] 「XP」是什么？经验值！
   
     我们不重置这些！
-    hp -> old ::hp + 1,000                   「HP」是什么？生命值！
+    hp -> old ::hp + 1,000                   「HP」？生命值！
     mp -> old ::mp + 10,000                  「MP」？魔法值！
     pp -> old ::pp + 10,000,000              「PP」？祈祷值！
     fp -> old ::fp + 10,000,000,000,000,000  「FP」？信心值！
