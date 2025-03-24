@@ -224,7 +224,7 @@ plan gathering
   
   criteria for plants
     is_awake == No
-    wake_cycle == Diarnal
+    wake_cycle == Diurnal
     heart >= Good
     
   criteria for gardeners
