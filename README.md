@@ -1,4 +1,4 @@
-Day
+Day【天】
 ======
 
 A language for processors and people.
