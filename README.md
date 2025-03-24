@@ -24,7 +24,9 @@ A language for processors and people.
 
   _Imagine a big, loving family all sharing a big, loving pantry._
 
-* A built-in “day/night cycle” keeps our programs well-organized and adorably predictable. State changes are batched together and applied together once the whole program has had a chance to examine the previous batch of changes.
+* A built-in “day/night cycle” keeps our programs well-organized and adorably predictable.
+
+  State changes are batched together during the day, and they’re applied together during the night, once the whole program has had a chance to examine the previous batch of changes.
 
   _Each day, the big, loving family carefully prepares a feast. They all wait until sundown to start eating together!_
 
@@ -49,7 +51,7 @@ Factorial [NaturalNumber n] -> NaturalNumber
   for each step from (1) to (n)
   {
     中文可爱。真的。
-    new answer is (current answer × step)
+    new answer is (old answer × step)
   }
 
   拜拜！
@@ -137,7 +139,6 @@ Trivia
 ```
 
 ```Day
-
 无方法。不允许方法。
 Vector2D attributes
 [
@@ -159,12 +160,12 @@ NormalizedVector2D? [Vector2D] -> Yes/No
   Length [vector] == 1?
 }
 
-方括号，无大括号。
+隐式变量：first，second
 DotProduct [Vector2D, Vector2D] -> Vector2D
 [
-  陶艺中，刮痕连接！
-  x -> first::x × second::x
-  y -> first::y × second::y
+  我们在方括号里，不在大括号! 
+  x: first.x × second.x
+  y: first.y × second.y
 ]
 
 因为「×」很可爱。
@@ -175,27 +176,27 @@ operator (×) [Vector2D, Vector2D] -> Vector2D
 
 operator (×) [Vector2D, Number scalar] -> Vector2D
 [
-  x -> vector::x × scalar
-  y -> vector::y × scalar
+  x: vector.x × scalar
+  y: vector.y × scalar
 ]
 
 见上文！
 operator (÷) [Vector2D, NonZero divisor] -> Vector2D
 [
-  x -> vector::x ÷ divisor
-  y -> vector::y ÷ divisor
+  x: vector.x ÷ divisor
+  y: vector.y ÷ divisor
 ]
 
 operator (+) [Vector2D, Vector2D] -> Vector2D
 [
-  x -> first::x + second::x
-  y -> first::y + second::y
+  x: first.x + second.x
+  y: first.y + second.y
 ]
 
 operator (-) [Vector2D, Vector2D] -> Vector2D
 [
-  x -> first::x - second::x
-  y -> first::y - second::y
+  x: first.x - second.x
+  y: first.y - second.y
 ]
 
 RealNumber? [Number] -> Yes/No
@@ -208,45 +209,49 @@ Length [Vector2D] -> RealNumber
   拜拜！谨慎嵌套！
   SquareRoot
   [
-    Square [vector::x] + Square [vector::y]
+    Square [vector.x] + Square [vector.y]
   ]
 }
 ```
 
 ```Day
 早啊，植物！醒醒吧！
-schedule
+plan gathering
 {
   这些是架子。
-  search Plants
-  search Gardeners
+  for Plants
+  for Gardeners
   
-  requirements
-    plant::awake? == No
-    plant::wake_cycle == Diurnal
-    plant::heart >= Good
+  rules
+    plant.is_awake == No
+    plant.wake_cycle == Diurnal
+    plant.heart >= Good
 
     在附近！
-    Length [plant::location - gardener::location] <= 40 Miles
+    Distance [plant.location, gardener.location] <= 40 Miles
   
-  modify plants
+  update gathered plants
+  [
     伸展啦，小苗苗！
-    awake? -> Yes
+    is_awake: Yes
     
     我们重置harvesters。
-    harvesters -> matching gardeners
+    harvesters: matching gardeners
     
     我们重置xp。
-    xp -> Sum [matching gardeners, each::xp] 「XP」是什么？经验值！
+    xp: Sum [matching gardeners, xp] 「XP」是什么？经验值！
   
     我们不重置这些！
-    hp -> old::hp + 1,000                    「HP」？生命值！
-    mp -> old::mp + 10,000                   「MP」？魔法值！
-    pp -> old::pp + 10,000,000               「PP」？祈祷值！
-    fp -> old::fp + 10,000,000,000,000,000   「FP」？信心值！
-    
-  modify gardeners
-    xp -> old::xp + (100 × Count [matching plants])
+    hp: old hp + 1,000                    「HP」？生命值！
+    mp: old mp + 10,000                   「MP」？魔法值！
+    pp: old pp + 10,000,000               「PP」？祈祷值！
+    fp: old fp + 10,000,000,000,000,000   「FP」？信心值！
+  ]
+  
+  update gathered gardeners
+  [
+    xp: old xp + (120 × Count [matching plants])
+  ]
 }
 ```
 
@@ -260,11 +265,16 @@ Goodness options
 
 Convert [Goodness] -> Number
 {
-  这允许`plant::heart >= Good`
+  这个函数允许`plant.heart >= Good`
   goodness translation
   | CartoonishlyBad  -> -2
   | Bad              -> -1
   | Good             ->  1
   | CartoonishlyGood ->  2  
+}
+
+Distance [Vector2D, Vector2D] -> RealNumber
+{
+  Length [first - second] 
 }
 ```
