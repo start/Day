@@ -164,8 +164,8 @@ NormalizedVector2D? [Vector2D] -> Yes/No
 DotProduct [Vector2D, Vector2D] -> Vector2D
 [
   我们在方括号里，不在大括号! 
-  x: first.x × second.x
-  y: first.y × second.y
+  x: first x × second x
+  y: first y × second y
 ]
 
 因为「×」很可爱。
@@ -176,27 +176,27 @@ operator (×) [Vector2D, Vector2D] -> Vector2D
 
 operator (×) [Vector2D, Number scalar] -> Vector2D
 [
-  x: vector.x × scalar
-  y: vector.y × scalar
+  x: vector x × scalar
+  y: vector y × scalar
 ]
 
 见上文！
 operator (÷) [Vector2D, NonZero divisor] -> Vector2D
 [
-  x: vector.x ÷ divisor
-  y: vector.y ÷ divisor
+  x: vector x ÷ divisor
+  y: vector y ÷ divisor
 ]
 
 operator (+) [Vector2D, Vector2D] -> Vector2D
 [
-  x: first.x + second.x
-  y: first.y + second.y
+  x: first x + second x
+  y: first y + second y
 ]
 
 operator (-) [Vector2D, Vector2D] -> Vector2D
 [
-  x: first.x - second.x
-  y: first.y - second.y
+  x: first x - second x
+  y: first y - second y
 ]
 
 RealNumber? [Number] -> Yes/No
@@ -209,7 +209,7 @@ Length [Vector2D] -> RealNumber
   拜拜！谨慎嵌套！
   SquareRoot
   [
-    Square [vector.x] + Square [vector.y]
+    Square [vector x] + Square [vector y]
   ]
 }
 ```
@@ -219,16 +219,20 @@ Length [Vector2D] -> RealNumber
 plan gathering
 {
   这些是架子。
-  for Plants
-  for Gardeners
+  gather Plants
+  gather Gardeners
   
-  rules
-    plant.is_awake == No
-    plant.wake_cycle == Diurnal
-    plant.heart >= Good
-
+  criteria for plants
+    is_awake == No
+    wake_cycle == Diarnal
+    heart >= Good
+    
+  criteria for gardeners
+    (none)
+    
+  relationships
     在附近！
-    Distance [plant.location, gardener.location] <= 40 Miles
+    Distance [plant location, gardener location] <= 40 Miles
   
   update gathered plants
   [
@@ -265,7 +269,7 @@ Goodness options
 
 Convert [Goodness] -> Number
 {
-  这个函数允许`plant.heart >= Good`
+  这个函数允许`plant heart >= Good`
   goodness translation
   | CartoonishlyBad  -> -2
   | Bad              -> -1
