@@ -75,7 +75,7 @@ Shout [Intensity, Text] -> Text
   | Severe   -> 10
 
   在拜拜啦！
-  take ALLCAPS [text] + (exclamation_mark_count × "!")
+  give ALLCAPS [text] + (exclamation_mark_count × "!")
 }
 ```
 
@@ -160,7 +160,7 @@ NormalizedVector2D? [Vector2D] -> Yes/No
   Length [vector] == 1?
 }
 
-隐式变量：first，second
+隐式变量：「first，second」
 DotProduct [Vector2D, Vector2D] -> Vector2D
 [
   我们在方括号里，不在大括号! 
