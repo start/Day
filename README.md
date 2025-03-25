@@ -51,11 +51,11 @@ Factorial [NaturalNumber n] -> NaturalNumber
   for each step from (1) to (n)
   {
     中文可爱。真的。
-    new answer is (old answer × step)
+    new answer is (old answer × this step)
   }
 
   拜拜！
-  take answer
+  give answer
 }
 
 Intensity options
@@ -219,31 +219,26 @@ Length [Vector2D] -> RealNumber
 plan gathering
 {
   这些是架子。
-  gather Plants
-  gather Gardeners
+  gather Gardeners as harvesters
+  gather Plants as crops
   
-  criteria for plants
-    is_awake == No
-    wake_cycle == Diurnal
+  crop criteria
+    is_awake: No
+    wake_cycle: Diurnal
     heart >= Good
-    
-  criteria for gardeners
-    (none)
-    
-  relationships
-    在附近！
-    Distance [plant location, gardener location] <= 40 Miles
   
-  update gathered plants
+  relationship criteria
+    在附近！
+    Distance [crop location, harvester location] <= 40 Miles
+  
+  update related crops
   [
     伸展啦，小苗苗！
     is_awake: Yes
     
-    我们重置harvesters。
-    harvesters: matching gardeners
-    
-    我们重置xp。
-    xp: Sum [matching gardeners, xp] 「XP」是什么？经验值！
+    我们重置这些。
+    harvesters: related harvesters
+    xp: Sum [related harvesters, xp] 「XP」是什么？经验值！
   
     我们不重置这些！
     hp: old hp + 1,000                    「HP」？生命值！
@@ -252,9 +247,9 @@ plan gathering
     fp: old fp + 10,000,000,000,000,000   「FP」？信心值！
   ]
   
-  update gathered gardeners
+  update related harvesters
   [
-    xp: old xp + (120 × Count [matching plants])
+    xp: old xp + (120 × Count [related crops])
   ]
 }
 ```
