@@ -142,8 +142,7 @@ Trivia
 无方法。不允许方法。
 Vector2D attributes
 [
-  Number x
-  Number y
+  Numbers x, y
 ]
 
 欢迎函数！
@@ -223,7 +222,7 @@ plan gathering
   gather Plants as crops
   
   crop criteria
-    is_awake: No
+    awake: No
     wake_cycle: Diurnal
     heart >= Good
   
@@ -262,9 +261,9 @@ Goodness options
 | Good
 | CartoonishlyGood
 
+这个函数允许比较。
 Convert [Goodness] -> Number
 {
-  这个函数允许`plant heart >= Good`
   goodness translation
   | CartoonishlyBad  -> -2
   | Bad              -> -1
@@ -276,4 +275,39 @@ Distance [Vector2D, Vector2D] -> RealNumber
 {
   Length [first - second] 
 }
+```
+
+```Day
+stock Plants
+[   
+  Yes/No          awake?
+  Yes/No          blooms?
+  WakeCycle       wake_cycle
+  Soil            favorite_soil
+  PronounFamily   favorite_pronouns
+  Goodness        heart
+  Patience        head
+  NaturalNumbers  hp, mp, pp, fp, xp
+]
+
+Plant relationships
+[
+  Gardeners as harvesters
+]
+
+PronounFamily options
+| He/Him
+| She/Her
+| They/Them
+  
+WakeCycle options
+| Diurnal
+| Nocturnal
+| Crepuscular
+
+魔法降临。光明入侵黑暗。天国侵略世界！
+Soil options
+| PurpleSand
+| GoldClay
+| Loam
 ```
