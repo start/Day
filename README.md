@@ -83,7 +83,7 @@ Shout [Intensity, Text] -> Text
 天主是美！
 Number options
 | WholeNumber
-| CompoundNumber
+| FixedPointNumber
 
 天主事全的。
 WholeNumber options
@@ -91,9 +91,9 @@ WholeNumber options
 | any Integer128
 
 天主锋利！（浮点吓人的。）
-CompoundNumber options
-| any Compound32
-| any Compound128
+FixedPointNumber options
+| any FixedPoint32
+| any FixedPoint128
 
 天主从石头中拔出剑!
 NumberDirection options
@@ -128,13 +128,13 @@ Trivia
 {
   他能飞，他能飞！然而，然而……
   Monarch butterfly
-    Top speed = 12 Miles per Hour
-    Favorite foods = Goldenrod, Milkweed
+    Top speed: 12 Miles per Hour
+    Favorite foods: Goldenrod, Milkweed
       
   她会捉到他！她很快，快，快!
   Painted lady butterfly
-    Top speed = 25 Miles per Hour
-    Favorite foods = Sunflower, Thistle
+    Top speed: 25 Miles per Hour
+    Favorite foods: Sunflower, Thistle
 }
 ```
 
@@ -156,7 +156,7 @@ Normalize [Vector2D] -> NormalizedVector2D
 
 NormalizedVector2D? [Vector2D] -> Yes/No
 {
-  Length [vector] == 1?
+  Length [vector] either 1, 0?
 }
 
 隐式变量：「first，second」
@@ -222,18 +222,18 @@ plan gathering
   gather Plants as crops
   
   crop criteria
-    awake: No
-    wake_cycle: Diurnal
-    heart >= Good
+    awake = No?
+    wake_cycle = Diurnal?
+    heart >= Good?
   
   relationship criteria
     在附近！
-    Distance [crop location, harvester location] <= 40 Miles
+    Distance [crop location, harvester location] <= 40 Miles?
   
   update related crops
   [
     伸展啦，小苗苗！
-    is_awake: Yes
+    awake: Yes
     
     我们重置这些。
     harvesters: related harvesters
