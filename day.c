@@ -7,23 +7,23 @@
   like a letter or digit.
 
   Unfortunately, C promises to recognize only a small handful of
-  distinct characters, typically just 255.
+  distinct characters--typically just 255.
 
   That's a big problem: The Chinese langauge alone has tens of
   thousands of distinct characters. C characters just aren't big
-  enough to represent the world's languages.
+  enough to represent the world's languages!
 
   Thus, text encodings like "UTF-8" were born. Behind the scenes,
   these encodings represent real-world characters (like 天）by
   bundling together multiple C characters.
 
   These bundles of C characters are big enough to represent
-  over a million distinct real-life characters.
+  over a million distinct real-world characters.
 
   To minimize confusion, within these bundles, each C character
   is typically referred to as a "byte" rather than a character.
 
-  (This character type represents a C character.)
+  (This character type represents a C character, not a bundle.)
 */
 typedef char Character;
 
@@ -38,11 +38,9 @@ typedef char Character;
   Likewise, a pointer points to a specific item among many items.
 
   In C, text is almost always represented by a character pointer
-  pointing to the text's first character.
-
-  To find to the text's second character, we add 1 to our
-  pointer's value, and so on. (Likewise, we add 1 to a locker
-  number to find its neighbor.)
+  pointing to the text's first character. To find to the text's
+  second character, we add 1 to our pointer's value, and so on.
+  (Likewise, we add 1 to a locker number to find its neighbor.)
 
   Note that C pointers have many, many uses. They always point to
   items, but they don't always represent a bunch of items strung
@@ -50,7 +48,7 @@ typedef char Character;
 */
 typedef Character *Text;
 
-// A bundle of C characters representing a real-life character
+// A bundle of C characters representing a real-world character
 // (like 天).
 typedef Character *CharacterBundle;
 
