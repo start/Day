@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
-size_t UTF8CharacterWidth(const char *character);
-uint32_t UTF8CharacterCodepoint(const char *character, const size_t width);
-bool IsUTF8CharacterChinese(uint32_t codepoint);
+typedef char Character;
+typedef uint32_t UTF8Codepoint;
+typedef size_t Count;
+typedef size_t Index;
+typedef bool YesNo;
+
+Count UTF8CharacterWidth(const Character *character);
+UTF8Codepoint UTF8CharacterCodepoint(const Character *character, Count character_w);
+YesNo IsUTF8CharacterChinese(UTF8Codepoint codepoint);
 
 int main(void)
 {
@@ -16,7 +21,7 @@ int main(void)
   const auto greeting_w = strlen(greeting);
 
   // The index of the current character in our greeting.
-  size_t greeting_i = 0;
+  Index greeting_i = 0;
   while (greeting_i < greeting_w)
   {
     const auto character = greeting + greeting_i;
@@ -39,11 +44,11 @@ int main(void)
       w       (0x00000077)   Booooooring.
       n       (0x0000006e)   Booooooring.
     */
-    printf("%.*s\t(0x%08x)   %s\n",
-           (int)character_w,
-           character,
-           codepoint,
-           is_chinese ? "Chinese!" : "Booooooring.");
+    printf(
+      "%.*s\t(0x%08x)   %s\n",
+      (int)character_w, character,
+      codepoint,
+      is_chinese ? "Chinese!" : "Booooooring.");
 
     greeting_i += character_w;
   }
@@ -52,9 +57,9 @@ int main(void)
 }
 
 // How many bytes wide is this UTF-8 character?
-size_t UTF8CharacterWidth(const char *character)
+Count UTF8CharacterWidth(const Character *character)
 {
-  const char first_byte = *character;
+  const auto first_byte = *character;
 
   if ((first_byte & 0b1000'0000) == 0)
   {
@@ -85,9 +90,9 @@ size_t UTF8CharacterWidth(const char *character)
 }
 
 // What is the codepoint of this UTF-8 character?
-uint32_t UTF8CharacterCodepoint(
-    const char *character,
-    const size_t character_w)
+UTF8Codepoint UTF8CharacterCodepoint(
+    const Character *character,
+    const Count character_w)
 {
   /*
     UTF-8 characters can consist of 1, 2, 3, or 4 bytes.
@@ -117,7 +122,7 @@ uint32_t UTF8CharacterCodepoint(
       // As you can see above, the 7 x's for 1-byte characters
       // are already squished together, exactly where we need
       // 'em.
-      return (uint32_t)*character;
+      return (UTF8Codepoint) *character;
     }
 
     case 2:
@@ -180,24 +185,25 @@ uint32_t UTF8CharacterCodepoint(
 }
 
 // Is this UTF-8 character codepoint Chinese?
-bool IsUTF8CharacterChinese(uint32_t codepoint)
+bool IsUTF8CharacterChinese(const UTF8Codepoint codepoint)
 {
   // https://www.unicode.org/charts/
-  return    (codepoint >= 0x03000 && codepoint <= 0x0303F) // CJK Symbols and Punctuation
-         || (codepoint >= 0x04E00 && codepoint <= 0x09FFF) // CJK Unified Ideographs (Han)
-         || (codepoint >= 0x03400 && codepoint <= 0x04DBF) // CJK Extension A
-         || (codepoint >= 0x20000 && codepoint <= 0x2A6DF) // CJK Extension B
-         || (codepoint >= 0x2A700 && codepoint <= 0x2B739) // CJK Extension C
-         || (codepoint >= 0x2B740 && codepoint <= 0x2B81D) // CJK Extension D
-         || (codepoint >= 0x2B820 && codepoint <= 0x2CEA1) // CJK Extension E
-         || (codepoint >= 0x2CEB0 && codepoint <= 0x2EBE0) // CJK Extension F
-         || (codepoint >= 0x30000 && codepoint <= 0x3134A) // CJK Extension G
-         || (codepoint >= 0x31350 && codepoint <= 0x323AF) // CJK Extension H
-         || (codepoint >= 0x2EBF0 && codepoint <= 0x2EE5D) // CJK Extension I
-         || (codepoint == 0x0FF01)                         // Fullwidth exclamation mark
-         || (codepoint == 0x0FF0C)                         // Fullwidth comma
-         || (codepoint == 0x0FF0E)                         // Fullwidth period
-         || (codepoint == 0x0FF1A)                         // Fullwidth colon
-         || (codepoint == 0x0FF1B)                         // Fullwidth semicolon
-         || (codepoint == 0x0FF1F);                        // Fullwidth question mark
+  return
+       (codepoint >= 0x03000 && codepoint <= 0x0303F) // CJK Symbols and Punctuation
+    || (codepoint >= 0x04E00 && codepoint <= 0x09FFF) // CJK Unified Ideographs (Han)
+    || (codepoint >= 0x03400 && codepoint <= 0x04DBF) // CJK Extension A
+    || (codepoint >= 0x20000 && codepoint <= 0x2A6DF) // CJK Extension B
+    || (codepoint >= 0x2A700 && codepoint <= 0x2B739) // CJK Extension C
+    || (codepoint >= 0x2B740 && codepoint <= 0x2B81D) // CJK Extension D
+    || (codepoint >= 0x2B820 && codepoint <= 0x2CEA1) // CJK Extension E
+    || (codepoint >= 0x2CEB0 && codepoint <= 0x2EBE0) // CJK Extension F
+    || (codepoint >= 0x30000 && codepoint <= 0x3134A) // CJK Extension G
+    || (codepoint >= 0x31350 && codepoint <= 0x323AF) // CJK Extension H
+    || (codepoint >= 0x2EBF0 && codepoint <= 0x2EE5D) // CJK Extension I
+    || (codepoint == 0x0FF01)                         // Fullwidth exclamation mark
+    || (codepoint == 0x0FF0C)                         // Fullwidth comma
+    || (codepoint == 0x0FF0E)                         // Fullwidth period
+    || (codepoint == 0x0FF1A)                         // Fullwidth colon
+    || (codepoint == 0x0FF1B)                         // Fullwidth semicolon
+    || (codepoint == 0x0FF1F);                        // Fullwidth question mark
 }

@@ -1,2 +1,8 @@
-# Our executable
-day
+# Output directories (CMake)
+cmake-build-*/
+
+# Editor settings (CLion)
+.idea/
+
+# OS settings (macOS)
+*.DS_Store
