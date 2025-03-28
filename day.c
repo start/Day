@@ -30,21 +30,23 @@ typedef char Character;
 /*
   Text is a bunch of characters strung together.
 
-  In C, "a bunch of items strung together" are represented with
-  "pointers".
+  In C, to reference "a bunch of [items] strung together", we
+  typically use something called a "pointer".
 
   You can think of a pointer like it's a locker number. A locker
   number points to one specific locker among many lockers, right?
-  Likewise, a pointer points to a specific item among many items.
+  Likewise, a pointer points to one specific item among many.
 
   In C, text is almost always represented by a character pointer
-  pointing to the text's first character. To find to the text's
+  pointing to the text's first character. To reference the text's
   second character, we add 1 to our pointer's value, and so on.
-  (Likewise, we add 1 to a locker number to find its neighbor.)
+
+  (Likewise, we add 1 to a locker number to reference its
+  neighbor.)
 
   Note that C pointers have many, many uses. They always point to
-  items, but they don't always represent a bunch of items strung
-  together.
+  something, but they don't always represent a bunch of items
+  strung together.
 */
 typedef Character *Text;
 
