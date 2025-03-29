@@ -60,7 +60,7 @@ typedef const Character *CharacterBundle;
 typedef uint32_t UTF8Codepoint;
 
 // Some number of items. Whole numbers only, zero or greater.
-typedef size_t Count;
+typedef size_t Size;
 
 /*
   Given multiple items, an offset indicates which item we're
@@ -93,10 +93,10 @@ typedef int Integer;
   That's what this next little block is for!
 */
 
-Count UTF8CharacterWidth(CharacterBundle bundle);
+Size UTF8CharacterWidth(CharacterBundle bundle);
 UTF8Codepoint UTF8CharacterCodepoint(
   CharacterBundle bundle,
-  Count character_w);
+  Size bundle_s);
 YesNo IsUTF8CharacterChinese(UTF8Codepoint code);
 
 /*
@@ -112,18 +112,20 @@ Integer main(Integer argument_count, Text arguments[])
   // "Hello, world!"
   const auto greeting = u8"你好，世界！yawn";
 
-  // How many bytes wide is the greeting?
-  const auto greeting_w = strlen(greeting);
+  // How many bytes wide is our greeting?
+  const auto greeting_s = strlen(greeting);
 
-  // The offset of the current character in our greeting.
+  // The offset of the current C character in our greeting.
   Offset greeting_o = 0;
-  while (greeting_o < greeting_w)
+  while (greeting_o < greeting_s)
   {
-    const auto character = greeting + greeting_o;
-    const auto character_w = UTF8CharacterWidth(character);
+    // This bundle represents the real-world character we're
+    // currently examining.
+    const auto bundle = greeting + greeting_o;
+    const auto bundle_s = UTF8CharacterWidth(bundle);
 
-    const auto codepoint = UTF8CharacterCodepoint(character, character_w);
-    const auto is_chinese = IsUTF8CharacterChinese(codepoint);
+    const auto code = UTF8CharacterCodepoint(bundle, bundle_s);
+    const auto is_chinese = IsUTF8CharacterChinese(code);
 
     /*
       Example output:
@@ -141,11 +143,11 @@ Integer main(Integer argument_count, Text arguments[])
     */
     printf(
       "%.*s\t(0x%08x)   %s\n",
-      (Integer) character_w, character,
-      codepoint,
+      (Integer) bundle_s, bundle,
+      code,
       is_chinese ? "Chinese!" : "Booooooring.");
 
-    greeting_o += character_w;
+    greeting_o += bundle_s;
   }
 
   // By returning 0, we tell C "We finished successfully!"
@@ -153,7 +155,7 @@ Integer main(Integer argument_count, Text arguments[])
 }
 
 // How many bytes wide is this UTF-8 character?
-Count UTF8CharacterWidth(const CharacterBundle bundle)
+Size UTF8CharacterWidth(const CharacterBundle bundle)
 {
   const auto first_byte = *bundle;
 
@@ -185,10 +187,10 @@ Count UTF8CharacterWidth(const CharacterBundle bundle)
   exit(EXIT_FAILURE);
 }
 
-// What is the codepoint of this UTF-8 character?
+// What is the numerical codepoint of this UTF-8 character?
 UTF8Codepoint UTF8CharacterCodepoint(
   const CharacterBundle bundle,
-  const Count character_w)
+  const Size bundle_s)
 {
   /*
     UTF-8 characters can consist of 1, 2, 3, or 4 bytes.
@@ -209,7 +211,7 @@ UTF8Codepoint UTF8CharacterCodepoint(
     the x's together!
   */
 
-  switch (character_w)
+  switch (bundle_s)
   {
     case 1:
     {
