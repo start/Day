@@ -38,7 +38,7 @@ Welcome to Day. 早上好！欢迎来到天。
 注释必须是中文！
 NaturalNumber? [WholeNumber] -> Yes/No
 {
-  whole >= 0?
+  is whole >= 0?
 }
 
 烦吗？烦。我也不说中文！
@@ -156,7 +156,7 @@ Normalize [Vector2D] -> NormalizedVector2D
 
 NormalizedVector2D? [Vector2D] -> Yes/No
 {
-  Length [vector] either 1, 0?
+  is Length [vector] either 1, 0?
 }
 
 隐式变量：「first，second」
@@ -200,7 +200,7 @@ operator (-) [Vector2D, Vector2D] -> Vector2D
 
 RealNumber? [Number] -> Yes/No
 {
-  number >= 0?
+  is number >= 0?
 }
 
 Length [Vector2D] -> RealNumber
@@ -222,9 +222,9 @@ plan gathering
   gather Plants as crops
   
   crop criteria
-    awake = No?
-    wake_cycle = Diurnal?
-    heart >= Good?
+    is awake No?
+    is wake_cycle Diurnal?
+    is heart >= Good?
   
   relationship criteria
     在附近！
