@@ -47,12 +47,14 @@ typedef char Character;
   Note that C pointers have many, many uses. They always point to
   something, but they don't always represent a bunch of items
   strung together.
+
+  P.S. Below, "const" means "the text can be read, not changed."
 */
-typedef Character *Text;
+typedef const Character *Text;
 
 // A bundle of C characters representing a real-world character
 // (like 天).
-typedef Character *CharacterBundle;
+typedef const Character *CharacterBundle;
 
 // The numeric identifier, or "code", of a UTF-8 character.
 typedef uint32_t UTF8Codepoint;
@@ -91,9 +93,11 @@ typedef int Integer;
   That's what this next little block is for!
 */
 
-Count UTF8CharacterWidth(const Character *character);
-UTF8Codepoint UTF8CharacterCodepoint(const Character *character, Count character_w);
-YesNo IsUTF8CharacterChinese(UTF8Codepoint codepoint);
+Count UTF8CharacterWidth(CharacterBundle bundle);
+UTF8Codepoint UTF8CharacterCodepoint(
+  CharacterBundle bundle,
+  Count character_w);
+YesNo IsUTF8CharacterChinese(UTF8Codepoint code);
 
 /*
   When our program runs, C calls this function. Thus, this is our
@@ -149,9 +153,9 @@ Integer main(Integer argument_count, Text arguments[])
 }
 
 // How many bytes wide is this UTF-8 character?
-Count UTF8CharacterWidth(const Character *character)
+Count UTF8CharacterWidth(const CharacterBundle bundle)
 {
-  const auto first_byte = *character;
+  const auto first_byte = *bundle;
 
   if ((first_byte & 0b1000'0000) == 0)
   {
@@ -183,7 +187,7 @@ Count UTF8CharacterWidth(const Character *character)
 
 // What is the codepoint of this UTF-8 character?
 UTF8Codepoint UTF8CharacterCodepoint(
-  const Character *character,
+  const CharacterBundle bundle,
   const Count character_w)
 {
   /*
@@ -214,13 +218,13 @@ UTF8Codepoint UTF8CharacterCodepoint(
       // As you can see above, the 7 x's for 1-byte characters
       // are already squished together, exactly where we need
       // 'em.
-      return *character;
+      return *bundle;
     }
 
     case 2:
     {
-      const auto byte_1_xs = character[0] & 0b0001'1111;
-      const auto byte_2_xs = character[1] & 0b0011'1111;
+      const auto byte_1_xs = 0b0001'1111 & bundle[0];
+      const auto byte_2_xs = 0b0011'1111 & bundle[1];
 
       /*
         Below, we shift the first byte's x's 6 bits to the left,
@@ -237,9 +241,9 @@ UTF8Codepoint UTF8CharacterCodepoint(
 
     case 3:
     {
-      const auto byte_1_xs = character[0] & 0b0000'1111;
-      const auto byte_2_xs = character[1] & 0b0011'1111;
-      const auto byte_3_xs = character[2] & 0b0011'1111;
+      const auto byte_1_xs = 0b0000'1111 & bundle[0];
+      const auto byte_2_xs = 0b0011'1111 & bundle[1];
+      const auto byte_3_xs = 0b0011'1111 & bundle[2];
 
       /*
         The same principle applies here.
@@ -256,10 +260,10 @@ UTF8Codepoint UTF8CharacterCodepoint(
 
     case 4:
     {
-      const auto byte_1_xs = character[0] & 0b0000'0111;
-      const auto byte_2_xs = character[1] & 0b0011'1111;
-      const auto byte_3_xs = character[2] & 0b0011'1111;
-      const auto byte_4_xs = character[3] & 0b0011'1111;
+      const auto byte_1_xs = 0b0000'0111 & bundle[0];
+      const auto byte_2_xs = 0b0011'1111 & bundle[1];
+      const auto byte_3_xs = 0b0011'1111 & bundle[2];
+      const auto byte_4_xs = 0b0011'1111 & bundle[3];
 
       return
           byte_1_xs << 18
@@ -277,26 +281,26 @@ UTF8Codepoint UTF8CharacterCodepoint(
 }
 
 // Is this UTF-8 character codepoint Chinese?
-YesNo IsUTF8CharacterChinese(const UTF8Codepoint codepoint)
+YesNo IsUTF8CharacterChinese(const UTF8Codepoint code)
 {
   // https://www.unicode.org/charts/
   return
-       (codepoint >= 0x03000 && codepoint <= 0x0303F) // CJK Symbols and Punctuation
-    || (codepoint >= 0x04E00 && codepoint <= 0x09FFF) // CJK Unified Ideographs (Han)
-    || (codepoint >= 0x03400 && codepoint <= 0x04DBF) // CJK Extension A
-    || (codepoint >= 0x20000 && codepoint <= 0x2A6DF) // CJK Extension B
-    || (codepoint >= 0x2A700 && codepoint <= 0x2B739) // CJK Extension C
-    || (codepoint >= 0x2B740 && codepoint <= 0x2B81D) // CJK Extension D
-    || (codepoint >= 0x2B820 && codepoint <= 0x2CEA1) // CJK Extension E
-    || (codepoint >= 0x2CEB0 && codepoint <= 0x2EBE0) // CJK Extension F
-    || (codepoint >= 0x30000 && codepoint <= 0x3134A) // CJK Extension G
-    || (codepoint >= 0x31350 && codepoint <= 0x323AF) // CJK Extension H
-    || (codepoint >= 0x2EBF0 && codepoint <= 0x2EE5D) // CJK Extension I
-    || (codepoint == 0x0FF01)                         // Fullwidth exclamation mark
-    || (codepoint == 0x0FF0C)                         // Fullwidth comma
-    || (codepoint == 0x0FF0E)                         // Fullwidth period
-    || (codepoint == 0x0FF1A)                         // Fullwidth colon
-    || (codepoint == 0x0FF1B)                         // Fullwidth semicolon
-    || (codepoint == 0x0FF1F);                        // Fullwidth question mark
+       (code >= 0x03000 && code <= 0x0303F) // CJK Symbols and Punctuation
+    || (code >= 0x04E00 && code <= 0x09FFF) // CJK Unified Ideographs (Han)
+    || (code >= 0x03400 && code <= 0x04DBF) // CJK Extension A
+    || (code >= 0x20000 && code <= 0x2A6DF) // CJK Extension B
+    || (code >= 0x2A700 && code <= 0x2B739) // CJK Extension C
+    || (code >= 0x2B740 && code <= 0x2B81D) // CJK Extension D
+    || (code >= 0x2B820 && code <= 0x2CEA1) // CJK Extension E
+    || (code >= 0x2CEB0 && code <= 0x2EBE0) // CJK Extension F
+    || (code >= 0x30000 && code <= 0x3134A) // CJK Extension G
+    || (code >= 0x31350 && code <= 0x323AF) // CJK Extension H
+    || (code >= 0x2EBF0 && code <= 0x2EE5D) // CJK Extension I
+    || (code == 0x0FF01)                         // Fullwidth exclamation mark
+    || (code == 0x0FF0C)                         // Fullwidth comma
+    || (code == 0x0FF0E)                         // Fullwidth period
+    || (code == 0x0FF1A)                         // Fullwidth colon
+    || (code == 0x0FF1B)                         // Fullwidth semicolon
+    || (code == 0x0FF1F);                        // Fullwidth question mark
 }
 
