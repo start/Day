@@ -15,15 +15,19 @@
 // An "arena allocator". TODO: Explain!
 struct MemoryAllocator
 {
-  Byte* memory;
+  // The underlying block of memory controlled by this allocator.
+  Memory memory;
+
+  // How many bytes in total does this allocator control?
   Size memory_s;
+
+  // How many bytes have been allocated?
   Size allocated_s;
 };
 
-struct MemoryAllocator CreateMemoryAllocator(Byte* memory, Size memory_s);
-Memory AllocateMemory(struct MemoryAllocator* allocator, Size needed_s);
+struct MemoryAllocator CreateMemoryAllocator(Memory memory, Size memory_s);
+Memory NextAddressToAllocate(const struct MemoryAllocator* allocator);
 void ResetMemoryAllocator(struct MemoryAllocator* allocator);
-
-
+Memory AllocateMemory(struct MemoryAllocator* allocator, Size needed_s);
 
 #endif

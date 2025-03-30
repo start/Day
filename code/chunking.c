@@ -1,5 +1,6 @@
 #include "chunking.h"
 #include "basic_types.h"
+#include "memory.h"
 #include "utf8.h"
 
 /*
@@ -80,7 +81,10 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
   Text line_of_code,
   struct MemoryAllocator* allocator)
 {
-  struct ChunkedLineOfCode result = {};
+  struct ChunkedLineOfCode result =
+  {
+    .code_chunks = NextAddressToAllocate(allocator)
+  };
 
   // How many bytes of this line of code have we read?
   Offset line_of_code_o = 0;
@@ -201,16 +205,16 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     }
 
     /*
-   If we've made it here, the current character is real code!
-   Finally!
- */
+      Good news, everyone! If we've made it here, the current
+      character is considered actual code!
+    */
 
     switch (current_goal)
     {
       case FindEndOfCurrentCodeChunk:
       {
-        // We're looking for the end of the current chunk of code,
-        // and this isn't it!
+        // We're looking for the end of the current chunk of
+        // code, and this isn't it.
         continue;
       }
 
