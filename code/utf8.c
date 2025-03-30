@@ -35,11 +35,8 @@ Size Utf8CharacterWidth(const CharacterBundle character_bundle)
   exit(EXIT_FAILURE);
 }
 
-/*
-  What is the UTF codepoint of this *UTF-8* character?
 
-  In C, functions and types cannot have
-*/
+// What is the UTF codepoint of this UTF-8 character?
 UTFCodepoint UTF8Codepoint(
   const CharacterBundle character_bundle,
   const Size character_bundle_s)
