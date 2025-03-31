@@ -1,6 +1,7 @@
 #include <stdlib.h>
+
 #include "memory.h"
-#include "basic_types.h"
+#include "common_data_types.h"
 
 // Create a new memory allocator.
 struct MemoryAllocator CreateMemoryAllocator(

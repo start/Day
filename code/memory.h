@@ -1,7 +1,7 @@
 #ifndef memory_h_already_included
 #define memory_h_already_included
 
-#include "basic_types.h"
+#include "common_data_types.h"
 
 #define Kilobytes(n) ((n) * 1024)
 #define Megabytes(n) (Kilobytes(n) * 1024)

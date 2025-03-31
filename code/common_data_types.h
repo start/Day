@@ -2,7 +2,6 @@
 #define basic_types_h_already_included
 
 #include <stdint.h>
-#include <stddef.h>
 
 /*
   In theory, a character is the smallest meaningful unit of text,

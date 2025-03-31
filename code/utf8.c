@@ -1,6 +1,7 @@
 #include <stdlib.h>
+
 #include "utf8.h"
-#include "basic_types.h"
+#include "common_data_types.h"
 
 // How many bytes wide is this UTF-8 character?
 Size Utf8CharacterWidth(const CharacterBundle character_bundle)

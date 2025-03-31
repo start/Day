@@ -3,7 +3,7 @@ project (Day C)
 
 set (CMAKE_C_STANDARD 23)
 
-# Require GCC
+# Require GCC.
 if (NOT CMAKE_C_COMPILER_ID MATCHES "GNU")
   message (FATAL_ERROR "Day requires GCC. You're using ${CMAKE_C_COMPILER_ID}!")
 endif ()
@@ -24,7 +24,7 @@ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${STACK_SIZE_FLAG}")
 add_executable (
   Day
   code/day.c
-  code/basic_types.h
+  code/common_data_types.h
   code/memory.c
   code/memory.h
   code/utf8.c

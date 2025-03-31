@@ -1,7 +1,7 @@
 #ifndef utf8_h_included
 #define utf8_h_included
 
-#include "basic_types.h"
+#include "common_data_types.h"
 
 Size Utf8CharacterWidth(CharacterBundle character_bundle);
 UTFCodepoint UTF8Codepoint(

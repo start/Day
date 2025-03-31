@@ -1,78 +1,11 @@
-#include "chunking.h"
 #include <string.h>
 #include <stdlib.h>
-#include "basic_types.h"
+#include <stddef.h>
+
+#include "chunking.h"
+#include "common_data_types.h"
 #include "memory.h"
 #include "utf8.h"
-
-/*
-  This represents a line of code that's been lightly processed.
-
-  Its indent level is calculated, its whitespace and commentary
-  are removed, and the remaining chunks of code are preserved.
-
-  Given this line of code:
-    "DotProduct [Vector2D, Vector2D] -> Vector2D"
-
-  Here's the representation:
-    .code_chunks =
-    {
-      "DotProduct", "[Vector2D,", "Vector2D]", "->", "Vector2D"
-    },
-    .code_chunks_s = 5,
-    .indent_level = 0
-
-  Given this line of code:
-    "    give vector的x"
-
-  Here's the representation:
-    .code_chunks =
-    {
-      "give", "vector", "x"
-    },
-    .code_chunks_s = 3,
-    .indent_level = 2
-*/
-
-// This is not unreasonable.
-constexpr auto max_chunks_per_line = 30;
-
-struct ChunkedLineOfCode
-{
-  // It's an array of pointers. We can afford it!
-  Text code_chunks[max_chunks_per_line];
-  Size code_chunks_s;
-
-  /*
-    This field represents how many levels deep this line is indented.
-    So Why is this field a floating point number?
-
-    To indent code by 1 level, we can use either:
-
-    * 2 regular spaces
-    * 1 fullwidth space (https://unicode-explorer.com/c/3000)
-    * 1 tab
-
-    Okay, but what happens if someone idents a line using an odd
-    number of regular spaces?
-
-    For example, imagine an indent of 3 regular spaces. That lies
-    between indent levels of 1 and 2, so which indent level
-    should we choose?
-
-    During this preliminary stage of processing, we'll just
-    record the indent level as 1.5.
-
-    However, ultimately, indent levels need to be whole numbers!
-    A later stage of processing will be able to reject this line
-    and offer a helpful error message.
-  */
-  Float32 indent_level;
-};
-
-constexpr auto regular_space_codepoint = 0x0020;
-constexpr auto fullwidth_space_codepoint = 0x3000;
-constexpr auto tab_codepoint = 0x0009;
 
 YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint)
 {
@@ -88,45 +21,59 @@ void ExtractAndAppendChunk(
   struct ChunkedLineOfCode* chunked_line,
   // The original line of code we're extracting from.
   Text original_line,
-  // (Inclusive.)
+  // The offset of the first character in the chunk.
   Offset chunk_start_o,
-  // (Inclusive.)
+  // The offset of the final character in the chunk.
   Offset chunk_end_o,
   // Our trusty allocator!
   struct MemoryAllocator *allocator)
 {
-  auto chunk_s =
+  const auto chunk_s =
     (chunk_end_o - chunk_start_o) + 1/*[?]*/;
   /*
-    [?]: Why do we add 1?
+    [?]: Why do we add 1 to the difference between the chunk‘s
+         start and end offsets?
 
-    The end index is inclusive. If 'chunk_start_o' and
-    'chunk_end_o' are equal, the chunk is 1 character wide.
+    If the chunk starts and ends on the same character, the start
+    and end offsets will be the same. The subtraction will
+    produce 0 bytes, even though the chunk has a size of 1 byte.
 
-    (We'll be adjusting for the null terminating byte later.)
+    That's because it's not the difference we truly care about!
+    Instead, we care about the number of bytes occupied. That'll
+    always be 1 more than the difference.
   */
 
-  auto newly_extracted_chunk_address =
-    (OverwritableText) AllocateMemory(allocator, chunk_s);
+  // This is the start of where we'll store our newly extracted
+  // chunk of text.
+  const OverwritableText chunk_to_extract_into =
+    AllocateMemory(allocator, chunk_s + 1/*[?]*/);
+  /*
+    [?]: Why don't we simply allocate bytes equal to the size of
+         the chunk? Why do we need add 1 to it?
 
-  auto embedded_chunk_start_address =
+    We need to make room for the null terminator byte, '\0',
+    which we'll manually tack on the end of the chunk after
+    extracting it from the source line.
+  */
+
+  const auto chunk_to_extract_from =
     original_line + chunk_start_o;
 
   // Extract the chunk!
   memcpy(
-    newly_extracted_chunk_address,
-    embedded_chunk_start_address,
+    chunk_to_extract_into,
+    chunk_to_extract_from,
     chunk_s);
 
-  auto chunk_still_needing_null_terminator =
-    ((OverwritableText) chunked_line->code_chunks[chunked_line->code_chunks_s]);
+  const auto chunk_still_needing_null_terminator =
+    (OverwritableText) chunked_line->code_chunks[chunked_line->code_chunks_s];
 
   // The cherry on top.
   chunk_still_needing_null_terminator[chunk_s] = '\0';
 
   // Append our extracted chunk!
   chunked_line->code_chunks[chunked_line->code_chunks_s] =
-  newly_extracted_chunk_address;
+    chunk_to_extract_into;
 
   // Let's make it official.
   chunked_line->code_chunks_s += 1;
@@ -170,16 +117,22 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     In C, every string of text ends with a special character
     called a "null terminator", written as '\0'.
 
-    On the next line, we update the current character, and then
-    we check whether its new value equals the null terminator. If
-    so, we terminate the loop.
+    We lean on this to determine when terminate our loop!
+
+    On the next line, we update the current character, then we
+    check whether the character is a null terminator. If so, we
+    terminate the loop.
   */
   while ('\0' != (character = line_of_code[line_of_code_o]))
   {
     const auto character_bundle = &character;
     const auto character_bundle_s = Utf8CharacterWidth(character_bundle);
 
-    // Advance our offset by the width of the current character.
+    /*
+      Advance our offset by the width of the current character.
+      Afterward, our offset will point to the byte immediately
+      following the UTF-8 character "bundle" we're examining.
+    */
     line_of_code_o += character_bundle_s;
 
     const auto codepoint =
@@ -261,7 +214,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
             &result,
             line_of_code,
             code_chunk_start_o,
-            line_of_code_o,
+            line_of_code_o - 1, // TODO: Explain
             allocator);
 
           current_goal = FindStartOfNextCodeChunk;
@@ -298,7 +251,8 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
           // TODO: HANDLE
         }
 
-        code_chunk_start_o = line_of_code_o;
+        // TODO: Explain
+        code_chunk_start_o = line_of_code_o - character_bundle_s;
 
         // Let's switch gears.
         current_goal = FindEndOfCurrentCodeChunk;
@@ -316,7 +270,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
       &result,
       line_of_code,
       code_chunk_start_o,
-      line_of_code_o,
+      line_of_code_o - 1, // TODO: Explain
       allocator);
   }
 
