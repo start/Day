@@ -25,7 +25,7 @@ struct MemoryAllocator
   Size allocated_s;
 };
 
-struct MemoryAllocator CreateMemoryAllocator(Memory memory, Size memory_s);
+struct MemoryAllocator MemoryAllocator(Memory memory, Size memory_s);
 Memory NextAddressToAllocate(const struct MemoryAllocator* allocator);
 void ResetMemoryAllocator(struct MemoryAllocator* allocator);
 Memory AllocateMemory(struct MemoryAllocator* allocator, Size needed_s);

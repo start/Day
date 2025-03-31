@@ -3,14 +3,15 @@
 #include "memory.h"
 #include "common_data_types.h"
 
-// Create a new memory allocator.
-struct MemoryAllocator CreateMemoryAllocator(
-  Memory memory,
+// Returns a new memory allocator, provided a region of memory
+// for the allocator to control.
+struct MemoryAllocator MemoryAllocator(
+  Memory memory_to_allocate_from,
   const Size memory_s)
 {
   return (struct MemoryAllocator)
   {
-    .memory = memory,
+    .memory = memory_to_allocate_from,
     .memory_s = memory_s
   };
 }
