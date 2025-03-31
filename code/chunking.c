@@ -23,33 +23,22 @@ void ExtractAndAppendChunk(
   Text original_line,
   // The offset of the first character in the chunk.
   Offset chunk_start_o,
-  // The offset of the final character in the chunk.
-  Offset chunk_end_o,
+  // The offset immediately following the final character in the
+  // chunk.
+  Offset immediately_following_chunk_end_o,
   // Our trusty allocator!
   struct MemoryAllocator *allocator)
 {
+  // How wide is the chunk we're extracting?
   const auto chunk_s =
-    (chunk_end_o - chunk_start_o) + 1/*[?]*/;
-  /*
-    [?]: Why do we add 1 to the difference between the chunk‘s
-         start and end offsets?
+    immediately_following_chunk_end_o - chunk_start_o;
 
-    If the chunk starts and ends on the same character, the start
-    and end offsets will be the same. The subtraction will
-    produce 0 bytes, even though the chunk has a size of 1 byte.
-
-    That's because it's not the difference we truly care about!
-    Instead, we care about the number of bytes occupied. That'll
-    always be 1 more than the difference.
-  */
-
-  // This is the start of where we'll store our newly extracted
-  // chunk of text.
+  // This is where we'll store our newly extracted chunk of text.
   const OverwritableText chunk_to_extract_into =
     AllocateMemory(allocator, chunk_s + 1/*[?]*/);
   /*
     [?]: Why don't we simply allocate bytes equal to the size of
-         the chunk? Why do we need add 1 to it?
+         the chunk? Why do we need add 1 to its size?
 
     We need to make room for the null terminator byte, '\0',
     which we'll manually tack on the end of the chunk after
@@ -214,7 +203,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
             &result,
             line_of_code,
             code_chunk_start_o,
-            line_of_code_o - 1, // TODO: Explain
+            line_of_code_o, // TODO: Explain
             allocator);
 
           current_goal = FindStartOfNextCodeChunk;
@@ -270,7 +259,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
       &result,
       line_of_code,
       code_chunk_start_o,
-      line_of_code_o - 1, // TODO: Explain
+      line_of_code_o,
       allocator);
   }
 
