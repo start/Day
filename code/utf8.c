@@ -131,7 +131,7 @@ UTFCodepoint UTF8Codepoint(
   }
 }
 
-// Is this UTF-8 character codepoint Chinese?
+// Does this UTF codepoint represent a Chinese character?
 YesNo IsUTFCodepointChinese(const UTFCodepoint code)
 {
   // https://www.unicode.org/charts/

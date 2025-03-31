@@ -54,6 +54,9 @@ typedef char Character;
 */
 typedef const Character *Text;
 
+// Text that can be overwritten, copied into, etc.
+typedef Character *OverwritableText;
+
 // A bundle of C characters representing a real-world character,
 // like "天" or "!".
 typedef const Character *CharacterBundle;
