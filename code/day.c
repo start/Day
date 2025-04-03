@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
-
 #include "common_data_types.h"
-#include "utf8.h"
+#include "text.h"
+
 
 /*
   When our program runs, C calls this function. Thus, this is our

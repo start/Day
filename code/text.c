@@ -1,7 +1,38 @@
 #include <stdlib.h>
-
-#include "utf8.h"
+#include "text.h"
 #include "common_data_types.h"
+#include "memory.h"
+
+
+// Copy a snippet of text.
+Text CopyText(
+  // The original line of code we're extracting from.
+  Text full_text,
+  // The offset of the first character we're copying.
+  Offset snippet_start_o,
+  // The offset immediately following the final character to copy.
+  Offset just_after_snippet_end_o,
+  // Our trusty allocator!
+  struct MemoryAllocator *allocator)
+{
+  // Where is the snippet we'll be copying?
+  const auto copy_from = full_text + snippet_start_o;
+
+  // How wide is the snippet we're copying?
+  const auto snippet_s =
+    just_after_snippet_end_o - snippet_start_o;
+
+  // Copy it.
+  OverwritableText copied_snippet =
+    AllocateCopy(allocator, (Memory) copy_from, snippet_s);
+
+  // The cherry on top! Let's add the null terminator byte.
+  Allocate(allocator, 1);
+  copied_snippet[snippet_s] = '\0';
+
+  return copied_snippet;
+}
+
 
 // How many bytes wide is this UTF-8 character?
 Size Utf8CharacterWidth(const CharacterBundle character_bundle)
@@ -132,6 +163,7 @@ UTFCodepoint UTF8Codepoint(
   }
 }
 
+
 // Does this UTF codepoint represent a Chinese character?
 YesNo IsUTFCodepointChinese(const UTFCodepoint code)
 {
@@ -148,10 +180,10 @@ YesNo IsUTFCodepointChinese(const UTFCodepoint code)
     || (code >= 0x30000 && code <= 0x3134A) // CJK Extension G
     || (code >= 0x31350 && code <= 0x323AF) // CJK Extension H
     || (code >= 0x2EBF0 && code <= 0x2EE5D) // CJK Extension I
-    || (code == 0x0FF01)                         // Fullwidth exclamation mark
-    || (code == 0x0FF0C)                         // Fullwidth comma
-    || (code == 0x0FF0E)                         // Fullwidth period
-    || (code == 0x0FF1A)                         // Fullwidth colon
-    || (code == 0x0FF1B)                         // Fullwidth semicolon
-    || (code == 0x0FF1F);                        // Fullwidth question mark
+    || (code == 0x0FF01)                    // Fullwidth exclamation mark
+    || (code == 0x0FF0C)                    // Fullwidth comma
+    || (code == 0x0FF0E)                    // Fullwidth period
+    || (code == 0x0FF1A)                    // Fullwidth colon
+    || (code == 0x0FF1B)                    // Fullwidth semicolon
+    || (code == 0x0FF1F);                   // Fullwidth question mark
 }

@@ -6,12 +6,6 @@
 #define Kilobytes(n) ((n) * 1024)
 #define Megabytes(n) (Kilobytes(n) * 1024)
 
-/*
-  In C, we determine the number of items in an array by dividing
-  its [total size in bytes] by its [first item's size in bytes].
-*/
-#define ArraySize(array) (sizeof array / sizeof array[0])
-
 // An "arena allocator". TODO: Explain!
 struct MemoryAllocator
 {
@@ -25,9 +19,22 @@ struct MemoryAllocator
   Size allocated_s;
 };
 
-struct MemoryAllocator MemoryAllocator(Memory memory, Size memory_s);
+struct MemoryAllocator MemoryAllocator(
+  Memory memory,
+  Size memory_s);
+
 Memory NextAddressToAllocate(const struct MemoryAllocator* allocator);
-void ResetMemoryAllocator(struct MemoryAllocator* allocator);
-Memory AllocateMemory(struct MemoryAllocator* allocator, Size needed_s);
+
+Memory Allocate(
+  struct MemoryAllocator*
+  allocator,
+  Size allocation_s);
+
+Memory AllocateCopy(
+  struct MemoryAllocator* allocator,
+  Memory memory_to_copy_from,
+  Size copy_s);
+
+void ResetAllocator(struct MemoryAllocator* allocator);
 
 #endif

@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include <string.h>
 #include "memory.h"
 #include "common_data_types.h"
 
@@ -16,8 +16,11 @@ struct MemoryAllocator MemoryAllocator(
   };
 }
 
-// What's the address of the next memory the given allocator will
-// allocate?
+
+/*
+  The next time we allocate memory, which address will our
+  allocator provide?
+*/
 Memory NextAddressToAllocate(const struct MemoryAllocator* allocator)
 {
   /*
@@ -39,11 +42,6 @@ Memory NextAddressToAllocate(const struct MemoryAllocator* allocator)
   return (Byte*) allocator->memory + allocator->allocated_s;
 }
 
-// Free all allocated memory.
-void ResetMemoryAllocator(struct MemoryAllocator* allocator)
-{
-  allocator->allocated_s = 0;
-}
 
 /*
   Returns a pointer to the newly allocated memory.
@@ -51,12 +49,13 @@ void ResetMemoryAllocator(struct MemoryAllocator* allocator)
   If the provided allocator doesn't have enough memory to perform
   the allocation, we immediately terminate the program.
 */
-Memory AllocateMemory(
+Memory Allocate(
   struct MemoryAllocator* allocator,
-  Size needed_s)
+  // How many bytes do we need to allocate?
+  Size allocation_s)
 {
   // Do we need more bytes than this allocator has available?
-  if (needed_s > (allocator->memory_s - allocator->allocated_s))
+  if (allocation_s > (allocator->memory_s - allocator->allocated_s))
   {
     // This allocator wasn't given enough memory. Let's exit our
     // program then go fix the bug.
@@ -64,10 +63,26 @@ Memory AllocateMemory(
   }
 
   // Record the memory address we're allocating into.
-  const auto allocation_address = NextAddressToAllocate(allocator);
+  const auto allocation = NextAddressToAllocate(allocator);
 
   // Record the number of bytes allocated.
-  allocator->allocated_s += needed_s;
+  allocator->allocated_s += allocation_s;
 
-  return allocation_address;
+  return allocation;
+}
+
+
+// Copy
+Memory AllocateCopy(
+  // Copy into this allocator.
+  struct MemoryAllocator* allocator,
+  // Where are we copying from?
+  Memory memory_to_copy_from,
+  // How many bytes are we copying?
+  Size copy_s)
+{
+  return memcpy(
+    Allocate(allocator, copy_s),
+    memory_to_copy_from,
+    copy_s);
 }

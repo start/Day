@@ -1,92 +1,25 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-
 #include "chunking.h"
 #include "common_data_types.h"
+#include "text.h"
 #include "memory.h"
-#include "utf8.h"
 
-YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint)
-{
-  return
-       (codepoint == regular_space_codepoint)
-    || (codepoint == fullwidth_space_codepoint)
-    || (codepoint == tab_codepoint)
-    || IsUTFCodepointChinese(codepoint);
-}
 
-void ExtractAndAppendChunk(
-  // The chunked line of code we're appending to.
-  struct ChunkedLineOfCode* chunked_line,
-  // The original line of code we're extracting from.
-  Text original_line,
-  // The offset of the first character in the chunk.
-  Offset chunk_start_o,
-  // The offset immediately following the final character in the
-  // chunk.
-  Offset immediately_following_chunk_end_o,
-  // Our trusty allocator!
-  struct MemoryAllocator *allocator)
-{
-  // How wide is the chunk we're extracting?
-  const auto chunk_s =
-    immediately_following_chunk_end_o - chunk_start_o;
-
-  // This is where we'll store our newly extracted chunk of text.
-  const OverwritableText chunk_to_extract_into =
-    AllocateMemory(allocator, chunk_s + 1/*[?]*/);
-  /*
-    [?]: Why don't we simply allocate bytes equal to the size of
-         the chunk? Why do we need add 1 to its size?
-
-    We need to make room for the null terminator byte, '\0',
-    which we'll manually tack on the end of the chunk after
-    extracting it from the source line.
-  */
-
-  const auto chunk_to_extract_from =
-    original_line + chunk_start_o;
-
-  // Extract the chunk!
-  memcpy(
-    chunk_to_extract_into,
-    chunk_to_extract_from,
-    chunk_s);
-
-  const auto chunk_still_needing_null_terminator =
-    (OverwritableText) chunked_line->code_chunks[chunked_line->code_chunks_s];
-
-  // The cherry on top.
-  chunk_still_needing_null_terminator[chunk_s] = '\0';
-
-  // Append our extracted chunk!
-  chunked_line->code_chunks[chunked_line->code_chunks_s] =
-    chunk_to_extract_into;
-
-  // Let's make it official.
-  chunked_line->code_chunks_s += 1;
-}
+YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint);
 
 // Note: This constructor isn't nearly finished!
 struct ChunkedLineOfCode ChunkedLineOfCode(
   Text line_of_code,
   struct MemoryAllocator *allocator)
 {
-  /*
-    This is what we'll return at the end, unless:
+  OverwritableText code_chunks[max_chunks_per_line];
+  auto code_chunks_s = 0;
+  auto indent_level = 0.0f;
 
-    1. The line has no code on it.
-    2. The line is too long.
-    3. The line has too many chunks.
-  */
-  struct ChunkedLineOfCode result =
-  {
-    .code_chunks = NextAddressToAllocate(allocator)
-  };
-
-  // How many bytes of code have we read?
-  Offset line_of_code_o = 0;
+  // Where is the next character we're going to examine?
+  Offset next_character_o = 0;
 
   // What's our current goal?
   enum
@@ -97,9 +30,9 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
   } current_goal = CalculateIndentLevel;
 
   // If we're within a code chunk, where did it begin?
-  Offset code_chunk_start_o = 0;
+  Offset chunk_start_o = 0;
 
-  // Which character are we currently looking at?
+  // Which character are we examining?
   Character character;
 
   /*
@@ -112,17 +45,24 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     check whether the character is a null terminator. If so, we
     terminate the loop.
   */
-  while ('\0' != (character = line_of_code[line_of_code_o]))
+  while ('\0' != (character = line_of_code[next_character_o]))
   {
     const auto character_bundle = &character;
     const auto character_bundle_s = Utf8CharacterWidth(character_bundle);
 
+    // Let's save the offset of the current character. We might
+    // need this later.
+    const auto character_o = next_character_o;
+
     /*
-      Advance our offset by the width of the current character.
+      With that saved, let's advance our character offset by the
+      width of the current character.
+
       Afterward, our offset will point to the byte immediately
-      following the UTF-8 character "bundle" we're examining.
+      following the current UTF-8 character "bundle" we're
+      examining. We'll be ready for the next loop iteration!
     */
-    line_of_code_o += character_bundle_s;
+    next_character_o += character_bundle_s;
 
     const auto codepoint =
       UTF8Codepoint(character_bundle, character_bundle_s);
@@ -139,14 +79,14 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
         case regular_space_codepoint:
         {
           // Let's increase the indent level by half.
-          result.indent_level += 0.5f;
+          indent_level += 0.5f;
           continue;
         }
 
         case fullwidth_space_codepoint:
         case tab_codepoint:
         {
-          result.indent_level += 1;
+          indent_level += 1;
           continue;
         }
 
@@ -190,7 +130,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
       {
         case FindStartOfNextCodeChunk:
         {
-          // We're looking for the next chunk of code, and this
+          // If we're looking for the next chunk of code, this
           // isn't it!
           continue;
         }
@@ -199,17 +139,34 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
         {
           // We've found the end of the current chunk! Let's add
           // it to our collection.
-          ExtractAndAppendChunk(
-            &result,
+
+          //
+          //
+          /*
+            We've already advanced 'next_character_o' beyond the
+            current character. It now points to the next one!
+
+
+          */
+          const auto just_after_chunk_end =
+            character_o - character_bundle_s;
+
+          // Extract the chunk...
+          const auto chunk = CopyText(
             line_of_code,
-            code_chunk_start_o,
-            line_of_code_o, // TODO: Explain
+            chunk_start_o,
+            just_after_chunk_end,
             allocator);
+
+          // ... and make it official!
+          code_chunks[code_chunks_s] = (OverwritableText) chunk;
+          code_chunks_s += 1;
 
           current_goal = FindStartOfNextCodeChunk;
           continue;
         }
 
+        // Nothing to see here.
         default: unreachable();
       }
     }
@@ -223,8 +180,8 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     {
       case FindEndOfCurrentCodeChunk:
       {
-        // We're looking for the end of the current chunk of
-        // code, and this code character definitely isn't it.
+        // If we're looking for the end of the current chunk of
+        // code, then this code character isn't it.
         continue;
       }
 
@@ -232,36 +189,66 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
       {
         // We've found the start of the next chunk of code!
         // Do we have room?
-        if (result.code_chunks_s == max_chunks_per_line)
+        if (code_chunks_s == max_chunks_per_line)
         {
-          // For now, we'll throw a fit.
+          // For now, we'll just throw a fit.
           exit(EXIT_FAILURE);
-
-          // TODO: HANDLE
         }
 
         // TODO: Explain
-        code_chunk_start_o = line_of_code_o - character_bundle_s;
+        chunk_start_o = next_character_o - character_bundle_s;
 
         // Let's switch gears.
         current_goal = FindEndOfCurrentCodeChunk;
-
         continue;
       }
 
+      // That's impossible!
       default: unreachable();
     }
   }
 
+  // If we were in the middle of a chunk when we reached the null
+  // terminator byte.
   if (current_goal == FindEndOfCurrentCodeChunk)
   {
-    ExtractAndAppendChunk(
-      &result,
+    // Then let's collect the chunk and head home!
+
+    // We know 'next_character_o' points to the null terminator
+    // byte, which is indeed just after our chunk's end!
+    const auto just_after_chunk_end = next_character_o;
+
+    const auto chunk = CopyText(
       line_of_code,
-      code_chunk_start_o,
-      line_of_code_o,
+      chunk_start_o,
+      just_after_chunk_end,
       allocator);
+
+    code_chunks[code_chunks_s] = (OverwritableText) chunk;
+    code_chunks_s += 1;
   }
 
-  return result;
+  return (struct ChunkedLineOfCode)
+  {
+    .indent_level = indent_level,
+    // We aren't copying the code chunks themselves, but instead
+    // the collection that points to 'em.
+    .code_chunks = AllocateCopy(allocator, code_chunks, code_chunks_s),
+    .code_chunks_s = code_chunks_s
+  };
+}
+
+/*
+  Does this codepoint represent either whitespace or commentary,
+  as far as Day's rules are concerned?
+*/
+YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint)
+{
+  return
+    // Is it whitespace?
+       (codepoint == regular_space_codepoint)
+    || (codepoint == fullwidth_space_codepoint)
+    || (codepoint == tab_codepoint)
+    // Is it commentary?
+    || IsUTFCodepointChinese(codepoint);
 }

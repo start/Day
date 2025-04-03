@@ -37,13 +37,9 @@ constexpr auto max_chunks_per_line = 30;
 */
 struct ChunkedLineOfCode
 {
-  // It's an array of pointers. We can afford it!
-  Text code_chunks[max_chunks_per_line];
-  Size code_chunks_s;
-
   /*
-    This field represents how many levels deep this line is indented.
-    So Why is this field a floating point number?
+    This field represents how many levels deep this line is
+    indented. So why is it a floating point number?
 
     To indent code by 1 level, we can use either:
 
@@ -51,14 +47,9 @@ struct ChunkedLineOfCode
     * 1 fullwidth space (https://unicode-explorer.com/c/3000)
     * 1 tab
 
-    Okay, but what happens if someone idents a line using an odd
-    number of regular spaces?
-
-    For example, imagine an indent of 3 regular spaces. That lies
-    between indent levels of 1 and 2, so which indent level
-    should we choose?
-
-    During this preliminary stage of processing, we'll just
+    Now, imagine an indent of 3 regular spaces. That lies between
+    indent levels of 1 and 2, so which indent level should Day
+    use? During this preliminary stage of processing, we'll just
     record the indent level as 1.5.
 
     However, ultimately, indent levels need to be whole numbers!
@@ -66,6 +57,13 @@ struct ChunkedLineOfCode
     and offer a helpful error message.
   */
   Float32 indent_level;
+
+  // A sequence of chunks of code that were delineated by either
+  // whitespace or commentary.
+  Text *code_chunks;
+
+  // How many chunks of code are there?
+  Size code_chunks_s;
 };
 
 constexpr auto regular_space_codepoint = 0x0020;
