@@ -27,8 +27,8 @@ add_executable (
   code/common_data_types.h
   code/memory.c
   code/memory.h
-  code/chunking.c
-  code/chunking.h
+  code/straining.c
+  code/straining.h
   code/text.c
   code/text.h
 )

@@ -1,5 +1,5 @@
-#ifndef chunking_h_already_included
-#define chunking_h_already_included
+#ifndef straining_h_already_included
+#define straining_h_already_included
 
 #include "common_data_types.h"
 #include "memory.h"
@@ -35,7 +35,7 @@ constexpr auto max_line_length = 120;
     .code_chunks_s = 3,
     .indent_level = 2
 */
-struct ChunkedLineOfCode
+struct StrainedLineOfCode
 {
   /*
     This field represents how many levels deep this line is
@@ -70,7 +70,7 @@ constexpr auto codepoint_for_regular_space = 0x0020;
 constexpr auto codepoint_for_fullwidth_space = 0x3000;
 constexpr auto codepoint_for_tab = 0x0009;
 
-struct ChunkedLineOfCode ChunkedLineOfCode(
+struct StrainedLineOfCode StrainedLineOfCode(
   Character line_buffer[max_line_length],
   struct Allocator *allocator);
 

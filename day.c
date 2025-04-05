@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "code/common_data_types.h"
-#include "code/chunking.h"
+#include "code/straining.h"
 #include "code/memory.h"
 
 
-void Render(struct ChunkedLineOfCode chunked_line_of_code);
+void Render(struct StrainedLineOfCode strained);
 
 /*
   When our program runs, C calls this function. It's where our
@@ -36,7 +36,7 @@ Integer main(Integer argument_count, Text arguments[])
     Character line_buffer[max_line_length];
     while (fgets(line_buffer, sizeof(line_buffer), day_source_file))
     {
-      Render(ChunkedLineOfCode(line_buffer, &allocator));
+      Render(StrainedLineOfCode(line_buffer, &allocator));
     }
   }
   fclose(day_source_file);
@@ -47,13 +47,13 @@ Integer main(Integer argument_count, Text arguments[])
 
 
 
-void Render(struct ChunkedLineOfCode chunked_line_of_code)
+void Render(struct StrainedLineOfCode strained)
 {
-  printf("Indent level: %f\n", chunked_line_of_code.indent_level);
-  printf("Chunk count: %lu\n", chunked_line_of_code.code_chunks_s);
+  printf("Indent level: %f\n", strained.indent_level);
+  printf("Chunk count: %lu\n", strained.code_chunks_s);
 
-  for (auto i = 0; i < chunked_line_of_code.code_chunks_s; i++)
+  for (auto i = 0; i < strained.code_chunks_s; i++)
   {
-    printf("chunked_line_of_code[%i]: %s\n", i, chunked_line_of_code.code_chunks[i]);
+    printf("  '%s'\n", strained.code_chunks[i]);
   }
 }

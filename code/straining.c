@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "chunking.h"
+#include "straining.h"
 #include "common_data_types.h"
 #include "text.h"
 #include "memory.h"
@@ -11,7 +11,7 @@ YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint);
 
 
 // Note: This constructor isn't nearly finished!
-struct ChunkedLineOfCode ChunkedLineOfCode(
+struct StrainedLineOfCode StrainedLineOfCode(
   Character line_buffer[static max_line_length],
   struct Allocator *allocator)
 {
@@ -116,7 +116,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
               (Commentary is ignored by Day's compiler, so we
               treat the line as though it were empty.)
             */
-            return (struct ChunkedLineOfCode) {};
+            return (struct StrainedLineOfCode) {};
           }
         }
       }
@@ -217,18 +217,18 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     const auto just_after_chunk_end = next_character_o;
 
     // Extract the chunk...
-    const auto chunk = CopyText(
+    const auto code_chunk = CopyText(
       line_buffer,
       chunk_start_o,
       just_after_chunk_end,
       allocator);
 
     // ... and make it official!
-    code_chunks[code_chunks_s] = (OverwritableText) chunk;
+    code_chunks[code_chunks_s] = (OverwritableText) code_chunk;
     code_chunks_s += 1;
   }
 
-  return (struct ChunkedLineOfCode)
+  return (struct StrainedLineOfCode)
   {
     .indent_level = indent_level,
     .code_chunks_s = code_chunks_s,
