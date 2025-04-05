@@ -8,7 +8,7 @@ Text CopyText(
   Text full_text,
   Offset snippet_start_o,
   Offset just_after_snippet_end_o,
-  struct MemoryAllocator *allocator);
+  struct Allocator *allocator);
 
 Size Utf8CharacterWidth(CharacterBundle character_bundle);
 

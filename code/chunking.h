@@ -4,8 +4,8 @@
 #include "common_data_types.h"
 #include "memory.h"
 
-// This is perhaps unreasonably high.
-constexpr auto max_chunks_per_line = 60;
+
+constexpr auto max_line_length = 120;
 
 /*
   This represents a line of code that's been lightly processed.
@@ -71,7 +71,7 @@ constexpr auto codepoint_for_fullwidth_space = 0x3000;
 constexpr auto codepoint_for_tab = 0x0009;
 
 struct ChunkedLineOfCode ChunkedLineOfCode(
-  Text line_of_code,
-  struct MemoryAllocator *allocator);
+  Character line_buffer[max_line_length],
+  struct Allocator *allocator);
 
 #endif

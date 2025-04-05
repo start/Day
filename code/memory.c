@@ -5,11 +5,11 @@
 
 // Returns a new memory allocator, provided a region of memory
 // for the allocator to control.
-struct MemoryAllocator MemoryAllocator(
+struct Allocator Allocator(
   Memory memory_to_allocate_from,
   const Size memory_s)
 {
-  return (struct MemoryAllocator)
+  return (struct Allocator)
   {
     .memory = memory_to_allocate_from,
     .memory_s = memory_s
@@ -21,7 +21,7 @@ struct MemoryAllocator MemoryAllocator(
   The next time we allocate memory, which address will our
   allocator provide?
 */
-Memory NextAddressToAllocate(const struct MemoryAllocator* allocator)
+Memory NextAddressToAllocate(const struct Allocator* allocator)
 {
   /*
     In C, when we add 1 to a pointer's value, we're not actually
@@ -50,7 +50,7 @@ Memory NextAddressToAllocate(const struct MemoryAllocator* allocator)
   the allocation, we immediately terminate the program.
 */
 Memory Allocate(
-  struct MemoryAllocator* allocator,
+  struct Allocator* allocator,
   // How many bytes do we need to allocate?
   Size allocation_s)
 {
@@ -75,7 +75,7 @@ Memory Allocate(
 // Copy
 Memory AllocateCopy(
   // Copy into this allocator.
-  struct MemoryAllocator* allocator,
+  struct Allocator* allocator,
   // Where are we copying from?
   Memory memory_to_copy_from,
   // How many bytes are we copying?

@@ -9,17 +9,25 @@
 
 YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint);
 
+
 // Note: This constructor isn't nearly finished!
 struct ChunkedLineOfCode ChunkedLineOfCode(
-  Text line_of_code,
-  struct MemoryAllocator *allocator)
+  Character line_buffer[static max_line_length],
+  struct Allocator *allocator)
 {
-  OverwritableText code_chunks[max_chunks_per_line];
   Size code_chunks_s = 0;
   auto indent_level = 0.0f;
 
+  // Literally——
+  constexpr auto max_chunks_per_line = max_line_length / 2;
+  OverwritableText code_chunks[max_chunks_per_line];
+
   // Where is the next character we're going to examine?
   Offset next_character_o = 0;
+
+  // Was our line truncated because it's too long? (We assume the
+  // worst until proven otherwise.)
+  YesNo is_line_truncated = true;
 
   // What's our current goal?
   enum
@@ -35,18 +43,14 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
   // Which character are we examining?
   Character character;
 
-  /*
-    In C, every string of text ends with a special character
-    called a "null terminator", written as '\0'.
-
-    We lean on this to determine when terminate our loop!
-
-    On the next line, we update the current character, then we
-    check whether the character is a null terminator. If so, we
-    terminate the loop.
-  */
-  while ('\0' != (character = line_of_code[next_character_o]))
+  while ('\0' != (character = line_buffer[next_character_o]))
   {
+    if (character == '\n')
+    {
+      is_line_truncated = false;
+      break;
+    }
+
     const auto character_bundle = &character;
     const auto character_bundle_s = Utf8CharacterWidth(character_bundle);
 
@@ -141,7 +145,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
 
           // Let's copy it...
           const auto chunk = CopyText(
-            line_of_code,
+            line_buffer,
             chunk_start_o,
             character_o,
             allocator);
@@ -196,6 +200,12 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     }
   }
 
+  if (is_line_truncated == true)
+  {
+    // For now, let's throw a fit.
+    exit(EXIT_FAILURE);
+  }
+
   // If we were in the middle of a chunk when we reached the null
   // terminator byte...
   if (goal == FindEndOfCurrentCodeChunk)
@@ -208,7 +218,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
 
     // Extract the chunk...
     const auto chunk = CopyText(
-      line_of_code,
+      line_buffer,
       chunk_start_o,
       just_after_chunk_end,
       allocator);

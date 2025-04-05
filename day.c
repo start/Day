@@ -1,9 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "code/common_data_types.h"
 #include "code/chunking.h"
 #include "code/memory.h"
 
+
+void Render(struct ChunkedLineOfCode chunked_line_of_code);
 
 /*
   When our program runs, C calls this function. It's where our
@@ -15,15 +18,37 @@
 */
 Integer main(Integer argument_count, Text arguments[])
 {
-  constexpr auto how_much_memory_this_uses = Megabytes(4);
-  Byte memory[how_much_memory_this_uses];
-  auto allocator = MemoryAllocator(memory, how_much_memory_this_uses);
+  FILE *day_source_file;
+  {
+    const auto filename = "new.day";
+    day_source_file = fopen(filename, "r");
 
-  const auto line = u8"  give vector x";
+    if (day_source_file == NULL)
+    {
+      printf("Day couldn't open your source file: %s!\n");
+      exit(EXIT_FAILURE);
+    }
 
-  const auto chunked_line_of_code =
-    ChunkedLineOfCode(line, &allocator);
+    Byte allocator_memory[Kilobytes(2)];
+    auto allocator =
+      Allocator(allocator_memory, sizeof allocator_memory);
 
+    Character line_buffer[max_line_length];
+    while (fgets(line_buffer, sizeof(line_buffer), day_source_file))
+    {
+      Render(ChunkedLineOfCode(line_buffer, &allocator));
+    }
+  }
+  fclose(day_source_file);
+
+  // By returning 0, we tell C, "We finished successfully!"
+  return 0;
+}
+
+
+
+void Render(struct ChunkedLineOfCode chunked_line_of_code)
+{
   printf("Indent level: %f\n", chunked_line_of_code.indent_level);
   printf("Chunk count: %lu\n", chunked_line_of_code.code_chunks_s);
 
@@ -31,7 +56,4 @@ Integer main(Integer argument_count, Text arguments[])
   {
     printf("chunked_line_of_code[%i]: %s\n", i, chunked_line_of_code.code_chunks[i]);
   }
-
-  // By returning 0, we tell C, "We finished successfully!"
-  return 0;
 }

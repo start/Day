@@ -13,7 +13,7 @@ Text CopyText(
   // The offset immediately following the final character to copy.
   Offset just_after_snippet_end_o,
   // Our trusty allocator!
-  struct MemoryAllocator *allocator)
+  struct Allocator *allocator)
 {
   // Where is the snippet we'll be copying?
   const auto copy_from = full_text + snippet_start_o;

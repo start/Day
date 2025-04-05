@@ -7,7 +7,7 @@
 #define Megabytes(n) (Kilobytes(n) * 1024)
 
 // An "arena allocator". TODO: Explain!
-struct MemoryAllocator
+struct Allocator
 {
   // The underlying block of memory controlled by this allocator.
   Memory memory;
@@ -19,22 +19,22 @@ struct MemoryAllocator
   Size allocated_s;
 };
 
-struct MemoryAllocator MemoryAllocator(
+struct Allocator Allocator(
   Memory memory,
   Size memory_s);
 
-Memory NextAddressToAllocate(const struct MemoryAllocator* allocator);
+Memory NextAddressToAllocate(const struct Allocator* allocator);
 
 Memory Allocate(
-  struct MemoryAllocator*
+  struct Allocator*
   allocator,
   Size allocation_s);
 
 Memory AllocateCopy(
-  struct MemoryAllocator* allocator,
+  struct Allocator* allocator,
   Memory memory_to_copy_from,
   Size copy_s);
 
-void ResetAllocator(struct MemoryAllocator* allocator);
+void ResetAllocator(struct Allocator* allocator);
 
 #endif

@@ -32,3 +32,8 @@ add_executable (
   code/text.c
   code/text.h
 )
+
+# Copy "new.day", our test source file, into our output directory.
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/new.day ${CMAKE_CURRENT_BINARY_DIR}/new.day COPYONLY)
+
