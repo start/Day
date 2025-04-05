@@ -4,8 +4,8 @@
 #include "common_data_types.h"
 #include "memory.h"
 
-// This is not unreasonable.
-constexpr auto max_chunks_per_line = 30;
+// This is perhaps unreasonably high.
+constexpr auto max_chunks_per_line = 60;
 
 /*
   This represents a line of code that's been lightly processed.
@@ -66,9 +66,9 @@ struct ChunkedLineOfCode
   Size code_chunks_s;
 };
 
-constexpr auto regular_space_codepoint = 0x0020;
-constexpr auto fullwidth_space_codepoint = 0x3000;
-constexpr auto tab_codepoint = 0x0009;
+constexpr auto codepoint_for_regular_space = 0x0020;
+constexpr auto codepoint_for_fullwidth_space = 0x3000;
+constexpr auto codepoint_for_tab = 0x0009;
 
 struct ChunkedLineOfCode ChunkedLineOfCode(
   Text line_of_code,

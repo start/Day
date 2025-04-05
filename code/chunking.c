@@ -15,7 +15,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
   struct MemoryAllocator *allocator)
 {
   OverwritableText code_chunks[max_chunks_per_line];
-  auto code_chunks_s = 0;
+  Size code_chunks_s = 0;
   auto indent_level = 0.0f;
 
   // Where is the next character we're going to examine?
@@ -27,7 +27,7 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     CalculateIndentLevel,
     FindEndOfCurrentCodeChunk,
     FindStartOfNextCodeChunk,
-  } current_goal = CalculateIndentLevel;
+  } goal = CalculateIndentLevel;
 
   // If we're within a code chunk, where did it begin?
   Offset chunk_start_o = 0;
@@ -64,43 +64,42 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     */
     next_character_o += character_bundle_s;
 
-    const auto codepoint =
+    const auto character_codepoint =
       UTF8Codepoint(character_bundle, character_bundle_s);
 
     const auto is_character_chinese =
-      IsUTFCodepointChinese(codepoint);
+      IsUTFCodepointChinese(character_codepoint);
 
     // If we're still calculating the indent level...
-    if (current_goal == CalculateIndentLevel)
+    if (goal == CalculateIndentLevel)
     {
       // Let's check for whitespace!
-      switch (codepoint)
+      switch (character_codepoint)
       {
-        case regular_space_codepoint:
-        {
-          // Let's increase the indent level by half.
-          indent_level += 0.5f;
-          continue;
-        }
-
-        case fullwidth_space_codepoint:
-        case tab_codepoint:
+        case codepoint_for_fullwidth_space:
+        case codepoint_for_tab:
         {
           indent_level += 1;
           continue;
         }
 
+        case codepoint_for_regular_space:
+        {
+          indent_level += 0.5f;
+          continue;
+        }
+
         default:
         {
-          // We found a different character! That means we've
-          // finished calculating the indent level.
-          current_goal = FindStartOfNextCodeChunk;
+          // We found something other than indentation. That
+          // means we've finished calculating the indent level.
+          goal = FindStartOfNextCodeChunk;
 
           /*
             But before we move on...
 
             We've just found the first (non-indent) character on
-            this line of code.
+            this line of code, right?
 
             If this first character is Chinese, the whole line is
             considered commentary. We've gotta check for that.
@@ -124,9 +123,9 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
       level.
     */
 
-    if (IsWhitespaceOrCommentary(codepoint) == true)
+    if (IsWhitespaceOrCommentary(character_codepoint) == true)
     {
-      switch (current_goal)
+      switch (goal)
       {
         case FindStartOfNextCodeChunk:
         {
@@ -137,32 +136,21 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
 
         case FindEndOfCurrentCodeChunk:
         {
-          // We've found the end of the current chunk! Let's add
-          // it to our collection.
+          //  We've been hunting for the end of the current chunk
+          //  of code, and here it is.
 
-          //
-          //
-          /*
-            We've already advanced 'next_character_o' beyond the
-            current character. It now points to the next one!
-
-
-          */
-          const auto just_after_chunk_end =
-            character_o - character_bundle_s;
-
-          // Extract the chunk...
+          // Let's copy it...
           const auto chunk = CopyText(
             line_of_code,
             chunk_start_o,
-            just_after_chunk_end,
+            character_o,
             allocator);
 
           // ... and make it official!
           code_chunks[code_chunks_s] = (OverwritableText) chunk;
           code_chunks_s += 1;
 
-          current_goal = FindStartOfNextCodeChunk;
+          goal = FindStartOfNextCodeChunk;
           continue;
         }
 
@@ -172,16 +160,16 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
     }
 
     /*
-      Good news, everyone! If we've made it here, the current
-      character is considered actual code!
+      Good news, everyone! If we've made this far, the current
+      character is considered actual code.
     */
 
-    switch (current_goal)
+    switch (goal)
     {
       case FindEndOfCurrentCodeChunk:
       {
-        // If we're looking for the end of the current chunk of
-        // code, then this code character isn't it.
+        // Since we're looking for the end of the current chunk
+        // of code, this code character isn't it. Let's move on.
         continue;
       }
 
@@ -195,11 +183,11 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
           exit(EXIT_FAILURE);
         }
 
-        // TODO: Explain
-        chunk_start_o = next_character_o - character_bundle_s;
+        // Let's record the start of our chunk...
+        chunk_start_o = character_o;
+        // ... and switch gears.
+        goal = FindEndOfCurrentCodeChunk;
 
-        // Let's switch gears.
-        current_goal = FindEndOfCurrentCodeChunk;
         continue;
       }
 
@@ -209,21 +197,23 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
   }
 
   // If we were in the middle of a chunk when we reached the null
-  // terminator byte.
-  if (current_goal == FindEndOfCurrentCodeChunk)
+  // terminator byte...
+  if (goal == FindEndOfCurrentCodeChunk)
   {
-    // Then let's collect the chunk and head home!
+    // ...then let's collect the chunk and head home.
 
-    // We know 'next_character_o' points to the null terminator
-    // byte, which is indeed just after our chunk's end!
+    // We know 'next_character_o' points just past the end of the
+    // line.
     const auto just_after_chunk_end = next_character_o;
 
+    // Extract the chunk...
     const auto chunk = CopyText(
       line_of_code,
       chunk_start_o,
       just_after_chunk_end,
       allocator);
 
+    // ... and make it official!
     code_chunks[code_chunks_s] = (OverwritableText) chunk;
     code_chunks_s += 1;
   }
@@ -231,10 +221,13 @@ struct ChunkedLineOfCode ChunkedLineOfCode(
   return (struct ChunkedLineOfCode)
   {
     .indent_level = indent_level,
-    // We aren't copying the code chunks themselves, but instead
-    // the collection that points to 'em.
-    .code_chunks = AllocateCopy(allocator, code_chunks, code_chunks_s),
-    .code_chunks_s = code_chunks_s
+    .code_chunks_s = code_chunks_s,
+    // We aren't copying chunks' text; we're copying pointers to
+    // those pieces of text.
+    .code_chunks = AllocateCopy(
+      allocator,
+      code_chunks,
+      code_chunks_s * sizeof code_chunks[0]),
   };
 }
 
@@ -246,9 +239,9 @@ YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint)
 {
   return
     // Is it whitespace?
-       (codepoint == regular_space_codepoint)
-    || (codepoint == fullwidth_space_codepoint)
-    || (codepoint == tab_codepoint)
+       (codepoint == codepoint_for_regular_space)
+    || (codepoint == codepoint_for_fullwidth_space)
+    || (codepoint == codepoint_for_tab)
     // Is it commentary?
     || IsUTFCodepointChinese(codepoint);
 }

@@ -23,7 +23,7 @@ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${STACK_SIZE_FLAG}")
 
 add_executable (
   Day
-  code/day.c
+  day.c
   code/common_data_types.h
   code/memory.c
   code/memory.h
