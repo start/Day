@@ -48,12 +48,12 @@ struct StrainedLineOfCode StrainedLineOfCode(
       break;
     }
 
-    const auto character_bundle = &character;
-    const auto character_bundle_s = Utf8CharacterWidth(character_bundle);
+    auto character_bundle = &character;
+    auto character_bundle_s = Utf8CharacterWidth(character_bundle);
 
     // Let's save the offset of the current character. We might
     // need this later.
-    const auto character_o = next_character_o;
+    auto character_o = next_character_o;
 
     /*
       With that saved, let's advance our character offset by the
@@ -65,10 +65,10 @@ struct StrainedLineOfCode StrainedLineOfCode(
     */
     next_character_o += character_bundle_s;
 
-    const auto character_codepoint =
+    auto character_codepoint =
       UTF8Codepoint(character_bundle, character_bundle_s);
 
-    const auto is_character_chinese =
+    auto is_character_chinese =
       IsUTFCodepointChinese(character_codepoint);
 
     // If we're still calculating the indent level...
@@ -141,7 +141,7 @@ struct StrainedLineOfCode StrainedLineOfCode(
           //  of code, and here it is.
 
           // Let's copy it...
-          const auto chunk = CopyText(
+          auto chunk = CopyText(
             line_buffer,
             chunk_start_o,
             character_o,
@@ -211,10 +211,10 @@ struct StrainedLineOfCode StrainedLineOfCode(
 
     // We know 'next_character_o' points just past the end of the
     // line.
-    const auto just_after_chunk_end = next_character_o;
+    auto just_after_chunk_end = next_character_o;
 
     // Extract the chunk...
-    const auto code_chunk = CopyText(
+    auto code_chunk = CopyText(
       line_buffer,
       chunk_start_o,
       just_after_chunk_end,

@@ -16,10 +16,10 @@ Text CopyText(
   struct Allocator *allocator)
 {
   // Where is the snippet we'll be copying?
-  const auto copy_from = full_text + snippet_start_o;
+  auto copy_from = full_text + snippet_start_o;
 
   // How wide is the snippet we're copying?
-  const auto snippet_s =
+  auto snippet_s =
     just_after_snippet_end_o - snippet_start_o;
 
   // Copy it.
@@ -37,7 +37,7 @@ Text CopyText(
 // How many bytes wide is this UTF-8 character?
 enum UTF8CharacterWidth Utf8CharacterWidth(const CharacterBundle character_bundle)
 {
-  const auto first_byte = *character_bundle;
+  auto first_byte = *character_bundle;
 
   if ((first_byte & 0b1000'0000) == 0)
   {
@@ -106,8 +106,8 @@ UTFCodepoint UTF8Codepoint(
 
     case 2:
     {
-      const auto byte_1_xs = 0b0001'1111 & character_bundle[0];
-      const auto byte_2_xs = 0b0011'1111 & character_bundle[1];
+      auto byte_1_xs = 0b0001'1111 & character_bundle[0];
+      auto byte_2_xs = 0b0011'1111 & character_bundle[1];
 
       /*
         Below, we shift the first byte's x's 6 bits to the left,
@@ -124,9 +124,9 @@ UTFCodepoint UTF8Codepoint(
 
     case 3:
     {
-      const auto byte_1_xs = 0b0000'1111 & character_bundle[0];
-      const auto byte_2_xs = 0b0011'1111 & character_bundle[1];
-      const auto byte_3_xs = 0b0011'1111 & character_bundle[2];
+      auto byte_1_xs = 0b0000'1111 & character_bundle[0];
+      auto byte_2_xs = 0b0011'1111 & character_bundle[1];
+      auto byte_3_xs = 0b0011'1111 & character_bundle[2];
 
       /*
         The same principle applies here.
@@ -143,10 +143,10 @@ UTFCodepoint UTF8Codepoint(
 
     case 4:
     {
-      const auto byte_1_xs = 0b0000'0111 & character_bundle[0];
-      const auto byte_2_xs = 0b0011'1111 & character_bundle[1];
-      const auto byte_3_xs = 0b0011'1111 & character_bundle[2];
-      const auto byte_4_xs = 0b0011'1111 & character_bundle[3];
+      auto byte_1_xs = 0b0000'0111 & character_bundle[0];
+      auto byte_2_xs = 0b0011'1111 & character_bundle[1];
+      auto byte_3_xs = 0b0011'1111 & character_bundle[2];
+      auto byte_4_xs = 0b0011'1111 & character_bundle[3];
 
       return
           byte_1_xs << 18
@@ -165,7 +165,7 @@ UTFCodepoint UTF8Codepoint(
 
 
 // Does this UTF codepoint represent a Chinese character?
-YesNo IsUTFCodepointChinese(const UTFCodepoint code)
+YesNo IsUTFCodepointChinese(UTFCodepoint code)
 {
   // https://www.unicode.org/charts/
   return

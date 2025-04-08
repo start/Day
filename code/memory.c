@@ -7,7 +7,7 @@
 // for the allocator to control.
 struct Allocator Allocator(
   Memory memory_to_allocate_from,
-  const Size memory_s)
+  Size memory_s)
 {
   return (struct Allocator)
   {
@@ -63,7 +63,7 @@ Memory Allocate(
   }
 
   // Record the memory address we're allocating into.
-  const auto allocation = NextAddressToAllocate(allocator);
+  auto allocation = NextAddressToAllocate(allocator);
 
   // Record the number of bytes allocated.
   allocator->allocated_s += allocation_s;
