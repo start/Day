@@ -72,17 +72,22 @@ Memory Allocate(
 }
 
 
-// Copy
+// Copies into the given allocator.
 Memory AllocateCopy(
   // Copy into this allocator.
   struct Allocator* allocator,
   // Where are we copying from?
-  Memory memory_to_copy_from,
+  Memory copy_from,
   // How many bytes are we copying?
   Size copy_s)
 {
-  return memcpy(
-    Allocate(allocator, copy_s),
-    memory_to_copy_from,
-    copy_s);
+  auto copy_to = Allocate(allocator, copy_s);
+  return memcpy(copy_to, copy_from, copy_s);
+}
+
+
+// Performs a factory reset on the given allocator.
+void ResetAllocator(struct Allocator* allocator)
+{
+  allocator->allocated_s = 0;
 }

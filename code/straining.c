@@ -17,9 +17,6 @@ struct StrainedLineOfCode StrainedLineOfCode(
 {
   Size code_chunks_s = 0;
   auto indent_level = 0.0f;
-
-  // Literally——
-  constexpr auto max_chunks_per_line = max_line_length / 2;
   OverwritableText code_chunks[max_chunks_per_line];
 
   // Where is the next character we're going to examine?

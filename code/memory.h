@@ -32,7 +32,7 @@ Memory Allocate(
 
 Memory AllocateCopy(
   struct Allocator* allocator,
-  Memory memory_to_copy_from,
+  Memory copy_from,
   Size copy_s);
 
 void ResetAllocator(struct Allocator* allocator);

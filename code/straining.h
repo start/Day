@@ -3,9 +3,8 @@
 
 #include "common_data_types.h"
 #include "memory.h"
+#include "text.h"
 
-
-constexpr auto max_line_length = 120;
 
 /*
   This represents a line of code that's been lightly processed.
@@ -69,6 +68,26 @@ struct StrainedLineOfCode
 constexpr auto codepoint_for_regular_space = 0x0020;
 constexpr auto codepoint_for_fullwidth_space = 0x3000;
 constexpr auto codepoint_for_tab = 0x0009;
+
+constexpr auto max_line_length = 120;
+constexpr auto max_chunks_per_line = max_line_length / 2;
+
+// TODO: Figure out how to hide these constants.
+// *********************************************
+constexpr auto utf8_max_character_width = FourBytesWide;
+
+constexpr auto pointer_width = sizeof (void*);
+
+constexpr auto needed_memory_for_chunk_text =
+  (max_line_length * utf8_max_character_width);
+
+constexpr auto needed_memory_for_chunk_addresses =
+  (max_chunks_per_line * pointer_width);
+// *********************************************
+
+constexpr auto needed_memory_for_straining_a_line =
+    needed_memory_for_chunk_text
+  + needed_memory_for_chunk_addresses;
 
 struct StrainedLineOfCode StrainedLineOfCode(
   Character line_buffer[max_line_length],

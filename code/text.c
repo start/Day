@@ -35,32 +35,32 @@ Text CopyText(
 
 
 // How many bytes wide is this UTF-8 character?
-Size Utf8CharacterWidth(const CharacterBundle character_bundle)
+enum UTF8CharacterWidth Utf8CharacterWidth(const CharacterBundle character_bundle)
 {
   const auto first_byte = *character_bundle;
 
   if ((first_byte & 0b1000'0000) == 0)
   {
     // The first bit is 0.
-    return 1;
+    return OneByteWide;
   }
 
   if ((first_byte & 0b1110'0000) == 0b1100'0000)
   {
     // The first 2 bits are 1; the 3rd is 0.
-    return 2;
+    return TwoBytesWide;
   }
 
   if ((first_byte & 0b1111'0000) == 0b1110'0000)
   {
     // The first 3 bits are 1; the 4th is 0.
-    return 3;
+    return ThreeBytesWide;
   }
 
   if ((first_byte & 0b1111'1000) == 0b1111'0000)
   {
     // The first 4 bits are 1; the 5th is 0.
-    return 4;
+    return FourBytesWide;
   }
 
   // Invalid UTF-8. Who invited this character, anyway?
@@ -70,8 +70,8 @@ Size Utf8CharacterWidth(const CharacterBundle character_bundle)
 
 // What is the UTF codepoint of this UTF-8 character?
 UTFCodepoint UTF8Codepoint(
-  const CharacterBundle character_bundle,
-  const Size character_bundle_s)
+  CharacterBundle character_bundle,
+  enum UTF8CharacterWidth character_bundle_s)
 {
   /*
     UTF-8 characters can consist of 1, 2, 3, or 4 bytes.

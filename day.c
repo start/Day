@@ -18,33 +18,40 @@ void Render(struct StrainedLineOfCode strained);
 */
 Integer main(Integer argument_count, Text arguments[])
 {
-  FILE *day_source_file;
+  // The first argument is always the name of the program. Any
+  // user-specified arguments follow.
+  if (argument_count == 1)
   {
-    const auto filename = "new.day";
+    printf("You didn't specify a Day source file.");
+    exit(EXIT_FAILURE);
+  }
+
+  FILE *day_source_file; {
+    auto filename = arguments[1];
     day_source_file = fopen(filename, "r");
 
     if (day_source_file == NULL)
     {
-      printf("Day couldn't open your source file: %s!\n");
+      printf("Day couldn't open your source file: %s!\n", filename);
       exit(EXIT_FAILURE);
     }
 
-    Byte allocator_memory[Kilobytes(2)];
-    auto allocator =
-      Allocator(allocator_memory, sizeof allocator_memory);
+    Byte straining_memory[needed_memory_for_straining_a_line];
+    auto allocator = Allocator(
+      straining_memory,
+      sizeof straining_memory);
 
     Character line_buffer[max_line_length];
-    while (fgets(line_buffer, sizeof(line_buffer), day_source_file))
+    while (fgets(line_buffer, sizeof line_buffer, day_source_file))
     {
       Render(StrainedLineOfCode(line_buffer, &allocator));
+      ResetAllocator(&allocator);
     }
-  }
-  fclose(day_source_file);
+  } fclose(day_source_file);
 
-  // By returning 0, we tell C, "We finished successfully!"
+  // By returning 0, we tell C, "We didn't fail!"
   return 0;
 }
-
 
 
 void Render(struct StrainedLineOfCode strained)
