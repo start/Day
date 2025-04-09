@@ -10,26 +10,27 @@
   This represents a line of code that's been lightly processed.
 
   Its indent level is calculated, its whitespace and commentary
-  are removed, and the remaining tokens of code are preserved.
+  are removed, and the remaining pieces of code are collected as
+  tokens.
 
   Given this line of code:
-    "DotProduct [Vector2D, Vector2D] -> Vector2D"
+    "DotProduct (Vector2D, Vector2D) -> Vector2D"
 
   Here's the representation:
     .tokens =
     {
-      "DotProduct", "[Vector2D,", "Vector2D]", "->", "Vector2D"
+      "DotProduct", "(Vector2D,", "Vector2D)", "->", "Vector2D"
     },
     .tokens_s = 5,
     .indent_level = 0
 
   Given this line of code:
-    "    give vector的x"
+    "    return vector的x"
 
   Here's the representation:
     .tokens =
     {
-      "give", "vector", "x"
+      "return", "vector", "x"
     },
     .tokens_s = 3,
     .indent_level = 2

@@ -15,6 +15,8 @@ struct TokenizedLine TokenizedLine(
   Character line_buffer[static max_line_length],
   struct Allocator *allocator)
 {
+  // TODO: Handle strings.
+
   Size code_tokens_s = 0;
   auto indent_level = 0.0f;
   OverwritableText code_tokens[max_tokens_per_line];
