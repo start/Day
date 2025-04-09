@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "text.h"
 #include "common_data_types.h"
 #include "memory.h"
@@ -64,6 +65,7 @@ enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle)
   }
 
   // Invalid UTF-8. Who invited this character, anyway?
+  printf("Invalid first byte for a UTF-8 character: %u\n", first_byte);
   exit(EXIT_FAILURE);
 }
 
@@ -158,6 +160,7 @@ UTFCodepoint UTF8Codepoint(
     default:
     {
       // Invalid UTF-8.
+      printf("Invalid UTF-8 character width: %lu\n", character_bundle_s);
       exit(EXIT_FAILURE);
     }
   }

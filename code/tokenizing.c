@@ -15,7 +15,7 @@ struct TokenizedLine TokenizedLine(
   Character line_buffer[static max_line_length],
   struct Allocator *allocator)
 {
-  // TODO: Handle strings.
+  // TODO: Handle quotations.
 
   Size code_tokens_s = 0;
   auto indent_level = 0.0f;
@@ -32,8 +32,9 @@ struct TokenizedLine TokenizedLine(
   enum
   {
     CalculateIndentLevel,
-    FindEndOfCurrentToken,
     FindStartOfNextToken,
+    FindEndOfCurrentToken,
+    FindEndOfQuotation
   } goal = CalculateIndentLevel;
 
   // If we're within a code token, where did it begin?

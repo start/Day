@@ -36,16 +36,16 @@ Integer main(Integer argument_count, Text arguments[])
       exit(EXIT_FAILURE);
     }
 
-    Byte straining_memory[needed_memory_for_straining_a_line];
-    auto allocator = Allocator(
-      straining_memory,
-      sizeof straining_memory);
-
     Character line_buffer[max_line_length];
     while (fgets(line_buffer, sizeof line_buffer, day_source_file))
     {
-      Render(TokenizedLine(line_buffer, &allocator));
-      ResetAllocator(&allocator);
+      // TODO: Ensure C reuses this memory between iterations.
+      Byte tokenizing_memory[needed_memory_for_straining_a_line];
+      auto tokenizing_allocator = Allocator(
+        tokenizing_memory,
+        sizeof tokenizing_memory);
+
+      Render(TokenizedLine(line_buffer, &tokenizing_allocator));
     }
   } fclose(day_source_file);
 
