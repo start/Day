@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "straining.h"
+#include "tokenizing.h"
 #include "common_data_types.h"
 #include "text.h"
 #include "memory.h"
@@ -11,13 +11,13 @@ YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint);
 
 
 // Note: This constructor isn't nearly finished!
-struct StrainedLineOfCode StrainedLineOfCode(
+struct TokenizedLine TokenizedLine(
   Character line_buffer[static max_line_length],
   struct Allocator *allocator)
 {
-  Size code_chunks_s = 0;
+  Size code_tokens_s = 0;
   auto indent_level = 0.0f;
-  OverwritableText code_chunks[max_chunks_per_line];
+  OverwritableText code_tokens[max_tokens_per_line];
 
   // Where is the next character we're going to examine?
   Offset next_character_o = 0;
@@ -30,12 +30,12 @@ struct StrainedLineOfCode StrainedLineOfCode(
   enum
   {
     CalculateIndentLevel,
-    FindEndOfCurrentCodeChunk,
-    FindStartOfNextCodeChunk,
+    FindEndOfCurrentToken,
+    FindStartOfNextToken,
   } goal = CalculateIndentLevel;
 
-  // If we're within a code chunk, where did it begin?
-  Offset chunk_start_o = 0;
+  // If we're within a code token, where did it begin?
+  Offset token_start_o = 0;
 
   // Which character are we examining?
   Character character;
@@ -49,7 +49,7 @@ struct StrainedLineOfCode StrainedLineOfCode(
     }
 
     auto character_bundle = &character;
-    auto character_bundle_s = Utf8CharacterWidth(character_bundle);
+    auto character_bundle_s = UTF8CharacterWidth(character_bundle);
 
     // Let's save the offset of the current character. We might
     // need this later.
@@ -72,7 +72,7 @@ struct StrainedLineOfCode StrainedLineOfCode(
       IsUTFCodepointChinese(character_codepoint);
 
     // If we're still calculating the indent level...
-    if (goal == CalculateIndentLevel)
+    if (CalculateIndentLevel == goal)
     {
       // Let's check for whitespace!
       switch (character_codepoint)
@@ -94,7 +94,7 @@ struct StrainedLineOfCode StrainedLineOfCode(
         {
           // We found something other than indentation. That
           // means we've finished calculating the indent level.
-          goal = FindStartOfNextCodeChunk;
+          goal = FindStartOfNextToken;
 
           /*
             But before we move on...
@@ -107,13 +107,8 @@ struct StrainedLineOfCode StrainedLineOfCode(
           */
           if (is_character_chinese == true)
           {
-            /*
-              Yep. We'll treat the whole line as commentary.
-
-              (Commentary is ignored by Day's compiler, so we
-              treat the line as though it were empty.)
-            */
-            return (struct StrainedLineOfCode) {};
+            // Yep. We'll treat the whole line as commentary.
+            return (struct TokenizedLine) {};
           }
         }
       }
@@ -128,30 +123,30 @@ struct StrainedLineOfCode StrainedLineOfCode(
     {
       switch (goal)
       {
-        case FindStartOfNextCodeChunk:
+        case FindStartOfNextToken:
         {
-          // If we're looking for the next chunk of code, this
+          // If we're looking for the next token of code, this
           // isn't it!
           continue;
         }
 
-        case FindEndOfCurrentCodeChunk:
+        case FindEndOfCurrentToken:
         {
-          //  We've been hunting for the end of the current chunk
+          //  We've been hunting for the end of the current token
           //  of code, and here it is.
 
           // Let's copy it...
-          auto chunk = CopyText(
+          auto token = CopyText(
             line_buffer,
-            chunk_start_o,
+            token_start_o,
             character_o,
             allocator);
 
           // ... and make it official!
-          code_chunks[code_chunks_s] = (OverwritableText) chunk;
-          code_chunks_s += 1;
+          code_tokens[code_tokens_s] = (OverwritableText) token;
+          code_tokens_s += 1;
 
-          goal = FindStartOfNextCodeChunk;
+          goal = FindStartOfNextToken;
           continue;
         }
 
@@ -167,27 +162,27 @@ struct StrainedLineOfCode StrainedLineOfCode(
 
     switch (goal)
     {
-      case FindEndOfCurrentCodeChunk:
+      case FindEndOfCurrentToken:
       {
-        // Since we're looking for the end of the current chunk
+        // Since we're looking for the end of the current token
         // of code, this code character isn't it. Let's move on.
         continue;
       }
 
-      case FindStartOfNextCodeChunk:
+      case FindStartOfNextToken:
       {
-        // We've found the start of the next chunk of code!
+        // We've found the start of the next token of code!
         // Do we have room?
-        if (code_chunks_s == max_chunks_per_line)
+        if (code_tokens_s == max_tokens_per_line)
         {
           // For now, we'll just throw a fit.
           exit(EXIT_FAILURE);
         }
 
-        // Let's record the start of our chunk...
-        chunk_start_o = character_o;
+        // Let's record the start of our token...
+        token_start_o = character_o;
         // ... and switch gears.
-        goal = FindEndOfCurrentCodeChunk;
+        goal = FindEndOfCurrentToken;
 
         continue;
       }
@@ -203,44 +198,44 @@ struct StrainedLineOfCode StrainedLineOfCode(
     exit(EXIT_FAILURE);
   }
 
-  // If we were in the middle of a chunk when we reached the null
+  // If we were in the middle of a token when we reached the null
   // terminator byte...
-  if (goal == FindEndOfCurrentCodeChunk)
+  if (FindEndOfCurrentToken == goal)
   {
-    // ...then let's collect the chunk and head home.
+    // ...then let's collect the token and head home.
 
     // We know 'next_character_o' points just past the end of the
     // line.
-    auto just_after_chunk_end = next_character_o;
+    auto just_after_token_end = next_character_o;
 
-    // Extract the chunk...
-    auto code_chunk = CopyText(
+    // Extract the token...
+    auto code_token = CopyText(
       line_buffer,
-      chunk_start_o,
-      just_after_chunk_end,
+      token_start_o,
+      just_after_token_end,
       allocator);
 
     // ... and make it official!
-    code_chunks[code_chunks_s] = (OverwritableText) code_chunk;
-    code_chunks_s += 1;
+    code_tokens[code_tokens_s] = (OverwritableText) code_token;
+    code_tokens_s += 1;
   }
 
-  return (struct StrainedLineOfCode)
+  return (struct TokenizedLine)
   {
     .indent_level = indent_level,
-    .code_chunks_s = code_chunks_s,
-    // We aren't copying chunks' text; we're copying pointers to
+    .tokens_s = code_tokens_s,
+    // We aren't copying tokens' text; we're copying pointers to
     // those pieces of text.
-    .code_chunks = AllocateCopy(
+    .tokens = AllocateCopy(
       allocator,
-      code_chunks,
-      code_chunks_s * sizeof code_chunks[0]),
+      code_tokens,
+      code_tokens_s * sizeof code_tokens[0]),
   };
 }
 
 /*
   Does this codepoint represent either whitespace or commentary,
-  as far as Day's rules are concerned?
+  as far as T's rules are concerned?
 */
 YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint)
 {

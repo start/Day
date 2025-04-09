@@ -3,8 +3,6 @@
 
 #include "common_data_types.h"
 
-#define Kilobytes(n) ((n) * 1024)
-#define Megabytes(n) (Kilobytes(n) * 1024)
 
 // An "arena allocator". TODO: Explain!
 struct Allocator

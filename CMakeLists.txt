@@ -1,11 +1,11 @@
 cmake_minimum_required (VERSION 3.30)
-project (Day C)
+project (T C)
 
 set (CMAKE_C_STANDARD 23)
 
 # Require GCC.
 if (NOT CMAKE_C_COMPILER_ID MATCHES "GNU")
-  message (FATAL_ERROR "Day requires GCC. You're using ${CMAKE_C_COMPILER_ID}!")
+  message (FATAL_ERROR "T requires GCC. You're using ${CMAKE_C_COMPILER_ID}!")
 endif ()
 
 # Guess the appropriate linker flag for a 32-megabyte stack.
@@ -22,18 +22,18 @@ endif ()
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${STACK_SIZE_FLAG}")
 
 add_executable (
-  Day
-  day.c
+  t
+  compiler.c
   code/common_data_types.h
   code/memory.c
   code/memory.h
-  code/straining.c
-  code/straining.h
+  code/tokenizing.c
+  code/tokenizing.h
   code/text.c
   code/text.h
 )
 
-# Copy "new.day", our test source file, into our output directory.
+# Copy "sample.t", our test source file, into our output directory.
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/new.day ${CMAKE_CURRENT_BINARY_DIR}/new.day COPYONLY)
+  ${CMAKE_CURRENT_SOURCE_DIR}/sample.t ${CMAKE_CURRENT_BINARY_DIR}/sample.t COPYONLY)
 

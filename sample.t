@@ -1,0 +1,18 @@
+enum Gospel
+{
+  Matthew
+  Mark
+  Luke
+  John
+}
+
+function SignatureLine (Gospel) -> Line
+{
+  return gospel translation
+  {
+    Matthew: 'Blessed are the merciful, for they will receive mercy.'
+    Mark: 'And he sternly ordered them not to tell anyone about him.'
+    Luke: 'Then the demons came out of the man and entered the pigs.'
+    John: 'Verily, verily, I say unto you! Before Abraham was, I am.'
+  }
+}

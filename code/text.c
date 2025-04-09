@@ -35,7 +35,7 @@ Text CopyText(
 
 
 // How many bytes wide is this UTF-8 character?
-enum UTF8CharacterWidth Utf8CharacterWidth(const CharacterBundle character_bundle)
+enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle)
 {
   auto first_byte = *character_bundle;
 
@@ -94,7 +94,7 @@ UTFCodepoint UTF8Codepoint(
 
   switch (character_bundle_s)
   {
-    case 1:
+    case OneByteWide:
     {
       // 1-byte characters are easy.
       //
@@ -104,7 +104,7 @@ UTFCodepoint UTF8Codepoint(
       return *character_bundle;
     }
 
-    case 2:
+    case TwoBytesWide:
     {
       auto byte_1_xs = 0b0001'1111 & character_bundle[0];
       auto byte_2_xs = 0b0011'1111 & character_bundle[1];
@@ -122,7 +122,7 @@ UTFCodepoint UTF8Codepoint(
       return (byte_1_xs << 6) | byte_2_xs;
     }
 
-    case 3:
+    case ThreeBytesWide:
     {
       auto byte_1_xs = 0b0000'1111 & character_bundle[0];
       auto byte_2_xs = 0b0011'1111 & character_bundle[1];
@@ -141,7 +141,7 @@ UTFCodepoint UTF8Codepoint(
         | byte_3_xs;
     }
 
-    case 4:
+    case FourBytesWide:
     {
       auto byte_1_xs = 0b0000'0111 & character_bundle[0];
       auto byte_2_xs = 0b0011'1111 & character_bundle[1];

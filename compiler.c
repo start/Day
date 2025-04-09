@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "code/common_data_types.h"
-#include "code/straining.h"
+#include "code/tokenizing.h"
 #include "code/memory.h"
 
 
-void Render(struct StrainedLineOfCode strained);
+void Render(struct TokenizedLine tokenized);
 
 /*
   When our program runs, C calls this function. It's where our
@@ -19,10 +19,10 @@ void Render(struct StrainedLineOfCode strained);
 Integer main(Integer argument_count, Text arguments[])
 {
   // The first argument is always the name of the program. Any
-  // user-specified arguments follow.
+  // user-specified arguments follow it.
   if (argument_count == 1)
   {
-    printf("You didn't specify a Day source file.");
+    printf("You didn't specify a T source file.");
     exit(EXIT_FAILURE);
   }
 
@@ -32,7 +32,7 @@ Integer main(Integer argument_count, Text arguments[])
 
     if (day_source_file == NULL)
     {
-      printf("Day couldn't open your source file: %s!\n", filename);
+      printf("The compiler couldn't read your source file: %s!\n", filename);
       exit(EXIT_FAILURE);
     }
 
@@ -44,7 +44,7 @@ Integer main(Integer argument_count, Text arguments[])
     Character line_buffer[max_line_length];
     while (fgets(line_buffer, sizeof line_buffer, day_source_file))
     {
-      Render(StrainedLineOfCode(line_buffer, &allocator));
+      Render(TokenizedLine(line_buffer, &allocator));
       ResetAllocator(&allocator);
     }
   } fclose(day_source_file);
@@ -54,13 +54,13 @@ Integer main(Integer argument_count, Text arguments[])
 }
 
 
-void Render(struct StrainedLineOfCode strained)
+void Render(struct TokenizedLine tokenized)
 {
-  printf("Indent level: %f\n", strained.indent_level);
-  printf("Chunk count: %lu\n", strained.code_chunks_s);
+  printf("Indent level: %f\n", tokenized.indent_level);
+  printf("Token count: %lu\n", tokenized.tokens_s);
 
-  for (auto i = 0; i < strained.code_chunks_s; i++)
+  for (auto i = 0; i < tokenized.tokens_s; i++)
   {
-    printf("  '%s'\n", strained.code_chunks[i]);
+    printf("  '%s'\n", tokenized.tokens[i]);
   }
 }

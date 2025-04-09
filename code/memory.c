@@ -3,6 +3,7 @@
 #include "memory.h"
 #include "common_data_types.h"
 
+
 // Returns a new memory allocator, provided a region of memory
 // for the allocator to control.
 struct Allocator Allocator(

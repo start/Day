@@ -19,7 +19,7 @@ enum UTF8CharacterWidth: Size
   FourBytesWide = 4
 };
 
-enum UTF8CharacterWidth Utf8CharacterWidth(CharacterBundle character_bundle);
+enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle);
 
 UTFCodepoint UTF8Codepoint(
   CharacterBundle character_bundle,
