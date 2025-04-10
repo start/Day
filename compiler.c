@@ -22,32 +22,34 @@ Integer main(Integer argument_count, Text arguments[])
   // user-specified arguments follow it.
   if (argument_count == 1)
   {
-    printf("You didn't specify a T source file.");
+    fprintf(stderr, "You need to specify a T source file.\n");
     exit(EXIT_FAILURE);
   }
 
-  FILE *day_source_file; {
+  FILE *t_source_file; {
     auto filename = arguments[1];
-    day_source_file = fopen(filename, "r");
+    t_source_file = fopen(filename, "r");
 
-    if (day_source_file == NULL)
+    if (t_source_file == NULL)
     {
-      printf("The compiler couldn't read your source file: %s!\n", filename);
+      // [this message]: [underlying 'errno' message]
+      perror("The compiler couldn’t open your source file");
+      fprintf(stderr, "Provided filename: '%s'\n", filename);
+
       exit(EXIT_FAILURE);
     }
 
-    Character line_buffer[max_line_length];
-    while (fgets(line_buffer, sizeof line_buffer, day_source_file))
+    // TODO: Explain 2.
+    Character line_buffer[max_line_length + 2];
+    while (fgets(line_buffer, sizeof line_buffer, t_source_file))
     {
-      // TODO: Ensure C reuses this memory between iterations.
       Byte tokenizing_memory[needed_memory_for_straining_a_line];
-      auto tokenizing_allocator = Allocator(
-        tokenizing_memory,
-        sizeof tokenizing_memory);
+      auto tokenizing_allocator =
+        Allocator(tokenizing_memory, sizeof tokenizing_memory);
 
       Render(TokenizedLine(line_buffer, &tokenizing_allocator));
     }
-  } fclose(day_source_file);
+  } fclose(t_source_file);
 
   // By returning 0, we tell C, "We didn't fail!"
   return 0;
@@ -57,9 +59,9 @@ Integer main(Integer argument_count, Text arguments[])
 void Render(struct TokenizedLine tokenized)
 {
   printf("Indent level: %f\n", tokenized.indent_level);
-  printf("Token count: %lu\n", tokenized.tokens_s);
+  printf("Token count: %lu\n", tokenized.tokens_w);
 
-  for (auto i = 0; i < tokenized.tokens_s; i++)
+  for (auto i = 0; i < tokenized.tokens_w; i++)
   {
     printf("  '%s'\n", tokenized.tokens[i]);
   }

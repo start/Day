@@ -20,16 +20,16 @@ Text CopyText(
   auto copy_from = full_text + snippet_start_o;
 
   // How wide is the snippet we're copying?
-  auto snippet_s =
+  auto snippet_w =
     just_after_snippet_end_o - snippet_start_o;
 
   // Copy it.
   OverwritableText copied_snippet =
-    AllocateCopy(allocator, (Memory) copy_from, snippet_s);
+    AllocateCopy(allocator, (Memory) copy_from, snippet_w);
 
   // The cherry on top! Let's add the null terminator byte.
   Allocate(allocator, 1);
-  copied_snippet[snippet_s] = '\0';
+  copied_snippet[snippet_w] = '\0';
 
   return copied_snippet;
 }
@@ -64,8 +64,7 @@ enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle)
     return FourBytesWide;
   }
 
-  // Invalid UTF-8. Who invited this character, anyway?
-  printf("Invalid first byte for a UTF-8 character: %u\n", first_byte);
+  fprintf(stderr, "Invalid first byte for a UTF-8 character: %u\n", first_byte);
   exit(EXIT_FAILURE);
 }
 
@@ -73,7 +72,7 @@ enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle)
 // What is the UTF codepoint of this UTF-8 character?
 UTFCodepoint UTF8Codepoint(
   CharacterBundle character_bundle,
-  enum UTF8CharacterWidth character_bundle_s)
+  enum UTF8CharacterWidth character_bundle_w)
 {
   /*
     UTF-8 characters can consist of 1, 2, 3, or 4 bytes.
@@ -94,7 +93,7 @@ UTFCodepoint UTF8Codepoint(
     the x's together!
   */
 
-  switch (character_bundle_s)
+  switch (character_bundle_w)
   {
     case OneByteWide:
     {
@@ -159,8 +158,7 @@ UTFCodepoint UTF8Codepoint(
 
     default:
     {
-      // Invalid UTF-8.
-      printf("Invalid UTF-8 character width: %lu\n", character_bundle_s);
+      fprintf(stderr, "Invalid UTF-8 character width: %lu\n", character_bundle_w);
       exit(EXIT_FAILURE);
     }
   }

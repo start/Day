@@ -11,27 +11,27 @@ struct Allocator
   Memory memory;
 
   // How many bytes in total does this allocator control?
-  Size memory_s;
+  Size memory_w;
 
   // How many bytes have been allocated?
-  Size allocated_s;
+  Size allocated_w;
 };
 
 struct Allocator Allocator(
   Memory memory,
-  Size memory_s);
+  Size memory_w);
 
 Memory NextAddressToAllocate(const struct Allocator* allocator);
 
 Memory Allocate(
   struct Allocator*
   allocator,
-  Size allocation_s);
+  Size allocation_w);
 
 Memory AllocateCopy(
   struct Allocator* allocator,
   Memory copy_from,
-  Size copy_s);
+  Size copy_w);
 
 void ResetAllocator(struct Allocator* allocator);
 

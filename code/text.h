@@ -23,7 +23,7 @@ enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle);
 
 UTFCodepoint UTF8Codepoint(
   CharacterBundle character_bundle,
-  enum UTF8CharacterWidth character_bundle_s);
+  enum UTF8CharacterWidth character_bundle_w);
 
 YesNo IsUTFCodepointChinese(UTFCodepoint code);
 

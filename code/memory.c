@@ -8,12 +8,12 @@
 // for the allocator to control.
 struct Allocator Allocator(
   Memory memory_to_allocate_from,
-  Size memory_s)
+  Size memory_w)
 {
   return (struct Allocator)
   {
     .memory = memory_to_allocate_from,
-    .memory_s = memory_s
+    .memory_w = memory_w
   };
 }
 
@@ -40,7 +40,7 @@ Memory NextAddressToAllocate(const struct Allocator* allocator)
     bytes, we cast our memory pointer to 'Byte*' before we add
     to it the number of bytes we've already allocated.
   */
-  return (Byte*) allocator->memory + allocator->allocated_s;
+  return (Byte*) allocator->memory + allocator->allocated_w;
 }
 
 
@@ -53,10 +53,10 @@ Memory NextAddressToAllocate(const struct Allocator* allocator)
 Memory Allocate(
   struct Allocator* allocator,
   // How many bytes do we need to allocate?
-  Size allocation_s)
+  Size allocation_w)
 {
   // Do we need more bytes than this allocator has available?
-  if (allocation_s > (allocator->memory_s - allocator->allocated_s))
+  if (allocation_w > (allocator->memory_w - allocator->allocated_w))
   {
     // This allocator wasn't given enough memory. Let's exit our
     // program then go fix the bug.
@@ -67,7 +67,7 @@ Memory Allocate(
   auto allocation = NextAddressToAllocate(allocator);
 
   // Record the number of bytes allocated.
-  allocator->allocated_s += allocation_s;
+  allocator->allocated_w += allocation_w;
 
   return allocation;
 }
@@ -80,15 +80,15 @@ Memory AllocateCopy(
   // Where are we copying from?
   Memory copy_from,
   // How many bytes are we copying?
-  Size copy_s)
+  Size copy_w)
 {
-  auto copy_to = Allocate(allocator, copy_s);
-  return memcpy(copy_to, copy_from, copy_s);
+  auto copy_to = Allocate(allocator, copy_w);
+  return memcpy(copy_to, copy_from, copy_w);
 }
 
 
 // Performs a factory reset on the given allocator.
 void ResetAllocator(struct Allocator* allocator)
 {
-  allocator->allocated_s = 0;
+  allocator->allocated_w = 0;
 }

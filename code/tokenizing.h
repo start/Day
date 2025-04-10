@@ -21,7 +21,7 @@
     {
       "DotProduct", "(Vector2D,", "Vector2D)", "->", "Vector2D"
     },
-    .tokens_s = 5,
+    .tokens_w = 5,
     .indent_level = 0
 
   Given this line of code:
@@ -32,7 +32,7 @@
     {
       "return", "vector", "x"
     },
-    .tokens_s = 3,
+    .tokens_w = 3,
     .indent_level = 2
 */
 struct TokenizedLine
@@ -40,7 +40,7 @@ struct TokenizedLine
   // If a line starts with 3 spaces, its indent level is 1.5.
   Float32 indent_level;
   Text *tokens;
-  Size tokens_s;
+  Size tokens_w;
 };
 
 constexpr auto codepoint_for_regular_space = 0x0020;

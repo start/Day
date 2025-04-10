@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdio.h>
 #include "tokenizing.h"
 #include "common_data_types.h"
 #include "text.h"
@@ -12,21 +13,19 @@ YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint);
 
 // Note: This constructor isn't nearly finished!
 struct TokenizedLine TokenizedLine(
+  // A character buffer starting with our null-terminated line.
   Character line_buffer[static max_line_length],
   struct Allocator *allocator)
 {
   // TODO: Handle quotations.
 
-  Size code_tokens_s = 0;
-  auto indent_level = 0.0f;
+  // Should we use a dummy 'TokenizedLine' for this?
   OverwritableText code_tokens[max_tokens_per_line];
+  Size code_tokens_w = 0;
+  auto indent_level = 0.0f;
 
   // Where is the next character we're going to examine?
   Offset next_character_o = 0;
-
-  // Was our line truncated because it's too long? (We assume the
-  // worst until proven otherwise.)
-  YesNo is_line_truncated = true;
 
   // What's our current goal?
   enum
@@ -45,14 +44,8 @@ struct TokenizedLine TokenizedLine(
 
   while ('\0' != (character = line_buffer[next_character_o]))
   {
-    if (character == '\n')
-    {
-      is_line_truncated = false;
-      break;
-    }
-
     auto character_bundle = &character;
-    auto character_bundle_s = UTF8CharacterWidth(character_bundle);
+    auto character_bundle_w = UTF8CharacterWidth(character_bundle);
 
     // Let's save the offset of the current character. We might
     // need this later.
@@ -66,10 +59,22 @@ struct TokenizedLine TokenizedLine(
       following the current UTF-8 character "bundle" we're
       examining. We'll be ready for the next loop iteration!
     */
-    next_character_o += character_bundle_s;
+    next_character_o += character_bundle_w;
+
+    // TODO: Does T need a max line length?
+    if (next_character_o >= max_line_length)
+    {
+      fprintf(
+        stderr,
+        "The maximum line length is %i. This line is longer:\n%s",
+        max_line_length, line_buffer);
+
+      // TODO: Record the error and move along.
+      exit(EXIT_FAILURE);
+    }
 
     auto character_codepoint =
-      UTF8Codepoint(character_bundle, character_bundle_s);
+      UTF8Codepoint(character_bundle, character_bundle_w);
 
     auto is_character_chinese =
       IsUTFCodepointChinese(character_codepoint);
@@ -146,8 +151,8 @@ struct TokenizedLine TokenizedLine(
             allocator);
 
           // ... and make it official!
-          code_tokens[code_tokens_s] = (OverwritableText) token;
-          code_tokens_s += 1;
+          code_tokens[code_tokens_w] = (OverwritableText) token;
+          code_tokens_w += 1;
 
           goal = FindStartOfNextToken;
           continue;
@@ -174,15 +179,8 @@ struct TokenizedLine TokenizedLine(
 
       case FindStartOfNextToken:
       {
-        // We've found the start of the next token of code!
-        // Do we have room?
-        if (code_tokens_s == max_tokens_per_line)
-        {
-          // For now, we'll just throw a fit.
-          exit(EXIT_FAILURE);
-        }
-
-        // Let's record the start of our token...
+        // We've found the start of the next token. Let's record
+        // it...
         token_start_o = character_o;
         // ... and switch gears.
         goal = FindEndOfCurrentToken;
@@ -193,12 +191,6 @@ struct TokenizedLine TokenizedLine(
       // That's impossible!
       default: unreachable();
     }
-  }
-
-  if (is_line_truncated == true)
-  {
-    // For now, let's throw a fit.
-    exit(EXIT_FAILURE);
   }
 
   // If we were in the middle of a token when we reached the null
@@ -219,20 +211,20 @@ struct TokenizedLine TokenizedLine(
       allocator);
 
     // ... and make it official!
-    code_tokens[code_tokens_s] = (OverwritableText) code_token;
-    code_tokens_s += 1;
+    code_tokens[code_tokens_w] = (OverwritableText) code_token;
+    code_tokens_w += 1;
   }
 
   return (struct TokenizedLine)
   {
     .indent_level = indent_level,
-    .tokens_s = code_tokens_s,
+    .tokens_w = code_tokens_w,
     // We aren't copying tokens' text; we're copying pointers to
     // those pieces of text.
     .tokens = AllocateCopy(
       allocator,
       code_tokens,
-      code_tokens_s * sizeof code_tokens[0]),
+      code_tokens_w * sizeof code_tokens[0]),
   };
 }
 
