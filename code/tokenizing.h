@@ -14,12 +14,12 @@
   tokens.
 
   Given this line of code:
-    "DotProduct (Vector2D, Vector2D) -> Vector2D"
+    "Vector2D DotProduct(Vector2D, Vector2D)"
 
   Here's the representation:
     .tokens =
     {
-      "DotProduct", "(Vector2D,", "Vector2D)", "->", "Vector2D"
+      "Vector2D", "DotProduct(Vector2D,", "Vector2D)"
     },
     .tokens_w = 5,
     .indent_level = 0

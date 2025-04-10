@@ -6,9 +6,9 @@ enum Gospel
   John
 }
 
-function SignatureLine (Gospel) -> Line
+Line SignatureLine(Gospel)
 {
-  return gospel translation
+  return switch (gospel)
   {
     Matthew: 'Blessed are the merciful, for they will receive mercy.'
     Mark: 'And he sternly ordered them not to tell anyone about him.'
