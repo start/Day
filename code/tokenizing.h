@@ -50,13 +50,7 @@ constexpr auto codepoint_for_tab = 0x0009;
 constexpr auto max_line_length = 120;
 constexpr auto max_tokens_per_line = max_line_length / 2;
 
-// TODO: Figure out how to hide these constants.
-/**********************************************/
-constexpr auto utf8_max_character_width = FourBytesWide;
-constexpr auto pointer_width = sizeof (void*);
-/**********************************************/
-
-constexpr auto needed_memory_for_straining_a_line =
+constexpr auto needed_memory_for_tokenizing_a_line =
   // Memory needed for the pointers to the text of the tokens
   (max_tokens_per_line * pointer_width)
   // Memory needed for the actual text of the tokens

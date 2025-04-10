@@ -40,10 +40,10 @@ Integer main(Integer argument_count, Text arguments[])
     }
 
     // TODO: Explain 2.
-    Character line_buffer[max_line_length + 2];
+    Character line_buffer[(max_line_length * utf8_max_character_width) + 2];
     while (fgets(line_buffer, sizeof line_buffer, t_source_file))
     {
-      Byte tokenizing_memory[needed_memory_for_straining_a_line];
+      Byte tokenizing_memory[needed_memory_for_tokenizing_a_line];
       auto tokenizing_allocator =
         Allocator(tokenizing_memory, sizeof tokenizing_memory);
 

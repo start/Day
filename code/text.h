@@ -5,12 +5,6 @@
 #include "memory.h"
 
 
-Text CopyText(
-  Text full_text,
-  Offset snippet_start_o,
-  Offset just_after_snippet_end_o,
-  struct Allocator *allocator);
-
 enum UTF8CharacterWidth: Size
 {
   OneByteWide = 1,
@@ -19,7 +13,16 @@ enum UTF8CharacterWidth: Size
   FourBytesWide = 4
 };
 
-enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle);
+constexpr auto utf8_max_character_width = FourBytesWide;
+
+Text CopyText(
+  Text full_text,
+  Offset snippet_start_o,
+  Offset just_after_snippet_end_o,
+  struct Allocator *allocator);
+
+enum UTF8CharacterWidth UTF8CharacterWidth(
+  CharacterBundle character_bundle);
 
 UTFCodepoint UTF8Codepoint(
   CharacterBundle character_bundle,

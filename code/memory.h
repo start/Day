@@ -4,6 +4,8 @@
 #include "common_data_types.h"
 
 
+constexpr auto pointer_width = sizeof (void*);
+
 // An "arena allocator". TODO: Explain!
 struct Allocator
 {
