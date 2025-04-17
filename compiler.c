@@ -5,8 +5,12 @@
 #include <stdio.h>
 
 
-void Render(const struct TokenizedLine *tokenized);
+// C requires us to announce a function's definition before we’re
+// allowed to use the function.
+void Render(const struct TokenizedLine *tokenized, Offset line_number);
 
+
+// Our program starts here.
 Integer main(Integer argument_count, Text arguments[])
 {
   // The first argument is always the name of the program. Any
@@ -14,6 +18,13 @@ Integer main(Integer argument_count, Text arguments[])
   if (argument_count == 1)
   {
     ExitWithError("You need to specify a T source file.\n");
+  }
+
+  // For now, we only accept a single user-specified argument:
+  // the T source file.
+  if (argument_count > 2)
+  {
+    ExitWithError("You provided too many arguments.\n");
   }
 
   /*
@@ -57,7 +68,7 @@ Integer main(Integer argument_count, Text arguments[])
     */
 
     // Which line are we on?
-    Size line_number = 1;
+    Offset line_number = 1;
 
     while (fgets(line_buffer, sizeof line_buffer, t_source_file))
     {
@@ -71,7 +82,7 @@ Integer main(Integer argument_count, Text arguments[])
         TokenizedLine(line_buffer, line_number, &tokenizing_allocator);
 
       // Render the result!
-      Render(&tokenized_line);
+      Render(&tokenized_line, line_number);
 
       // Ever onward.
       line_number += 1;
@@ -82,13 +93,17 @@ Integer main(Integer argument_count, Text arguments[])
 }
 
 
-void Render(const struct TokenizedLine *tokenized)
+// Render a tokenized line for debug purposes.
+void Render(
+  const struct TokenizedLine *tokenized,
+  Offset line_number)
 {
-  printf("Indent level: %zu\n", tokenized->indent_level);
-  printf("Token count: %zu\n", tokenized->tokens_w);
+  printf("Line #%zu\n", line_number);
+  printf("  Indent level: %zu\n", tokenized->indent_level);
+  printf("  Token count: %zu\n", tokenized->tokens_w);
 
   for (Offset i = 0; i < tokenized->tokens_w; i++)
   {
-    printf("  '%s'\n", tokenized->tokens[i]);
+    printf("    %s\n", tokenized->tokens[i]);
   }
 }

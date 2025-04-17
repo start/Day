@@ -20,6 +20,8 @@ YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint);
   To keep things beautifully simple, if we encounter any syntax
   errors, we report the error to the standard error stream, then
   we safely exit the program.
+
+  TODO: Cleanly ignore the (optional) trailing newline character.
 */
 struct TokenizedLine TokenizedLine(
   // A character buffer starting with our null-terminated line.
@@ -247,8 +249,7 @@ struct TokenizedLine TokenizedLine(
     goal = FindStartOfNextToken;
   }
 
-  // (Here, we're at the very end of our constructor.)
-
+  // Alright! This is the very end of our constructor.
   switch (goal)
   {
     // If we're still trying to calculate the indent level...
@@ -276,6 +277,7 @@ struct TokenizedLine TokenizedLine(
       };
     }
 
+    // (We don't handle quotations yet.)
     case FindEndOfQuotation:
     {
       ExitWithError(
@@ -284,9 +286,11 @@ struct TokenizedLine TokenizedLine(
         line_number);
     }
 
-    // We handled this directly before this 'switch'.
+    // (We handled this directly before this current 'switch'.)
     case FindEndOfCurrentToken: unreachable();
   }
+
+  unreachable();
 }
 
 
