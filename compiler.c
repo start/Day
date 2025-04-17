@@ -16,6 +16,13 @@ Integer main(Integer argument_count, Text arguments[])
     ExitWithError("You need to specify a T source file.\n");
   }
 
+  /*
+    Q: Why are we introducing a new scope, demarcated by { ... }?
+
+    A: This little construct helps us to remember to close the
+       file once we're done with it, which is right after the
+       matching closing curly brace.
+  */
   FILE *t_source_file; {
     auto filename = arguments[1];
     t_source_file = fopen(filename, "r");
@@ -41,7 +48,7 @@ Integer main(Integer argument_count, Text arguments[])
       will be missing in two situations:
 
       1. The final line of the file doesn't end with a '\n'.
-      2. The line is longer than our buffer. In this case,
+      2. Any given line is longer than our buffer. In this case,
          'fgets' will truncate the line.
 
       We always make room for both the '\n' and '\0'. If 'fgets'
@@ -54,15 +61,19 @@ Integer main(Integer argument_count, Text arguments[])
 
     while (fgets(line_buffer, sizeof line_buffer, t_source_file))
     {
+      // Create our allocator using blazing-fast stack memory.
       Byte tokenizing_memory[bytes_needed_to_tokenize_a_line];
       auto tokenizing_allocator =
         Allocator(tokenizing_memory, sizeof tokenizing_memory);
 
+      // Tokenize the current line.
       auto tokenized_line =
         TokenizedLine(line_buffer, line_number, &tokenizing_allocator);
 
+      // Render the result!
       Render(&tokenized_line);
 
+      // Ever onward.
       line_number += 1;
     }
   } fclose(t_source_file);
