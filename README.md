@@ -1,11 +1,14 @@
-T
-=
+T【茶】
+=======
 
-C minus the brine.
+_C minus the brine._
 
-|                               |  C  |  T  |
-|------------------------------:|:---:|:---:|
-|                        Brine? | Yes | No  |
-|     Interesting plant matter? | Yes | Yes |
-| Automatic garbage collection? | No  | No  |
-|    Safe for most programmers? | No  | Yes |
+|                                                          |  C  |  T   | Winner? |
+|---------------------------------------------------------:|:---:|:----:|:-------:|
+|                                                   Brine? | Yes |  No  |  **T**  |
+|                                Interesting plant matter? | Yes | Yes  | **Tie** |
+|                      Safe for most programmers to drink? | No  | Yes  |  **T**  |
+|                            Automatic garbage collection? | No  |  No  | **Tie** |
+|                                           Memory safety? | No  | Yes  |  **T**  |
+| Sacrosanct “borrow checker” that rejects valid programs? | No  |  No  | **Tie** |
+|     Designed for computers with _literally_ 64KB of RAM? | Yes |  No  |  **T**  |
