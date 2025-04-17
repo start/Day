@@ -50,7 +50,7 @@ struct TokenizedLine
   Size tokens_w;
 };
 
-constexpr Size max_line_length = 250;
+constexpr Size max_line_length = 120;
 constexpr Size max_tokens_per_line = max_line_length / 2;
 
 constexpr Size bytes_needed_to_tokenize_a_line =

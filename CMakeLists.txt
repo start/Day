@@ -35,7 +35,17 @@ add_executable (
   code/exit_with_error.h
 )
 
-# Copy "sample.t", our test source file, into our output directory.
+# Copy "sample-valid.t", our test source file, into our output directory.
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/sample.t ${CMAKE_CURRENT_BINARY_DIR}/sample.t COPYONLY)
+  t_code_samples/sample-valid.t ${CMAKE_CURRENT_BINARY_DIR}/sample-valid.t COPYONLY)
+
+# Copy "sample-valid.t", our test source file, into our output directory.
+configure_file(
+  t_code_samples/sample-invalid.t ${CMAKE_CURRENT_BINARY_DIR}/sample-invalid.t COPYONLY)
+
+# Copy everything from "./t_code_samples/" into the output directory.
+file(GLOB SAMPLE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/t_code_samples/*")
+foreach(SAMPLE_FILE ${SAMPLE_FILES})
+  configure_file(${SAMPLE_FILE} ${CMAKE_CURRENT_BINARY_DIR}/ COPYONLY)
+endforeach()
 

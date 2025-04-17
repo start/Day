@@ -3,6 +3,6 @@
 
 #include "text.h"
 
-_Noreturn void ExitWithError(Text formatted_error, ...);
+_Noreturn void ExitWithError(Text formatted_error_description, ...);
 
 #endif

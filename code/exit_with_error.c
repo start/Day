@@ -3,20 +3,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-_Noreturn void ExitWithError(Text formatted_error, ...)
+// This exits the program and writes the provided error
+// description to the standard error stream.
+_Noreturn void ExitWithError(
+  // What exactly went wrong?
+  Text formatted_error_description,
+  // If the error description contains any format specifiers,
+  // they're bundled here.
+  ...)
 {
-  // This represents those '...' arguments
+  // This represents those variadic '...' arguments.
   va_list variable_arguments;
 
-  // The '...' arguments start after 'formatted_error'
-  va_start(variable_arguments, formatted_error);
+  // The variadic arguments start after the
+  // 'formatted_error_description' argument.
+  va_start(variable_arguments, formatted_error_description);
 
-  // 'vfprintf' is 'fprintf', but it can accept '...' arguments.
-  vfprintf(stderr, formatted_error, variable_arguments);
+  // 'vfprintf' is just like 'fprintf', but it can accept
+  //  variadic arguments.
+  vfprintf(stderr, formatted_error_description, variable_arguments);
 
-  // We're done with the '...' arguments. I'm not entirely sure
+  // Indicate that we're done with the variadic arguments.
+  // (Secretly, I'm not entirely sure why this is necessary.)
   va_end(variable_arguments);
 
+  // As promised, let's exit our program.
   exit(EXIT_FAILURE);
 }
