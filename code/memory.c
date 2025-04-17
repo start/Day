@@ -1,7 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
 #include "memory.h"
 #include "common_data_types.h"
+#include "exit_with_error.h"
+#include <stdlib.h>
+#include <string.h>
 
 
 // Returns a new memory allocator, provided a region of memory
@@ -60,7 +61,14 @@ Memory Allocate(
   {
     // This allocator wasn't given enough memory. Let's exit our
     // program then go fix the bug.
-    exit(EXIT_FAILURE);
+    ExitWithError(
+      "Allocator ran out of memory!\n"
+      "  Requested: %zu bytes\n"
+      "  Total: %zu bytes\n",
+      "  Used: %zu bytes\n",
+      allocation_w,
+      allocator->memory_w,
+      allocator->allocated_w);
   }
 
   // Record the memory address we're allocating into.

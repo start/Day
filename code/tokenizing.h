@@ -6,12 +6,16 @@
 #include "text.h"
 
 
+constexpr auto utf_codepoint_for_regular_space = 0x0020;
+constexpr auto utf_codepoint_for_fullwidth_space = 0x3000;
+constexpr auto utf_codepoint_for_tab = 0x0009;
+
 /*
   This represents a line of code that's been lightly processed.
 
   Its indent level is calculated, its whitespace and commentary
-  are removed, and the remaining pieces of code are collected as
-  tokens.
+  are removed, and the remaining interleaved pieces of code are
+  collected as tokens.
 
   Given this line of code:
     "Vector2D DotProduct(Vector2D, Vector2D)"
@@ -19,7 +23,9 @@
   Here's the representation:
     .tokens =
     {
-      "Vector2D", "DotProduct(Vector2D,", "Vector2D)"
+      "Vector2D",
+      "DotProduct(Vector2D,",
+      "Vector2D)"
     },
     .tokens_w = 5,
     .indent_level = 0
@@ -30,27 +36,24 @@
   Here's the representation:
     .tokens =
     {
-      "return", "vector", "x"
+      "return",
+      "vector",
+      "x"
     },
     .tokens_w = 3,
     .indent_level = 2
 */
 struct TokenizedLine
 {
-  // If a line starts with 3 spaces, its indent level is 1.5.
-  Float32 indent_level;
+  Size indent_level;
   Text *tokens;
   Size tokens_w;
 };
 
-constexpr auto codepoint_for_regular_space = 0x0020;
-constexpr auto codepoint_for_fullwidth_space = 0x3000;
-constexpr auto codepoint_for_tab = 0x0009;
+constexpr Size max_line_length = 250;
+constexpr Size max_tokens_per_line = max_line_length / 2;
 
-constexpr auto max_line_length = 120;
-constexpr auto max_tokens_per_line = max_line_length / 2;
-
-constexpr auto needed_memory_for_tokenizing_a_line =
+constexpr Size bytes_needed_to_tokenize_a_line =
   // Memory needed for the pointers to the text of the tokens
   (max_tokens_per_line * pointer_width)
   // Memory needed for the actual text of the tokens
@@ -58,6 +61,7 @@ constexpr auto needed_memory_for_tokenizing_a_line =
 
 struct TokenizedLine TokenizedLine(
   Character line_buffer[max_line_length],
+  Size line_buffer_w,
   struct Allocator *allocator);
 
 #endif

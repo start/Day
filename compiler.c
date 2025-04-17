@@ -1,29 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "code/common_data_types.h"
+#include "code/exit_with_error.h"
 #include "code/tokenizing.h"
 #include "code/memory.h"
+#include <stdio.h>
 
 
-void Render(struct TokenizedLine tokenized);
+void Render(const struct TokenizedLine *tokenized);
 
-/*
-  When our program runs, C calls this function. It's where our
-  program begins.
-
-  C is very strict about this function! It must be named "main"
-  with all lowercase letters, it must return an integer, and its
-  arguments must have specific types.
-*/
 Integer main(Integer argument_count, Text arguments[])
 {
   // The first argument is always the name of the program. Any
   // user-specified arguments follow it.
   if (argument_count == 1)
   {
-    fprintf(stderr, "You need to specify a T source file.\n");
-    exit(EXIT_FAILURE);
+    ExitWithError("You need to specify a T source file.\n");
   }
 
   FILE *t_source_file; {
@@ -34,35 +24,60 @@ Integer main(Integer argument_count, Text arguments[])
     {
       // [this message]: [underlying 'errno' message]
       perror("The compiler couldn’t open your source file");
-      fprintf(stderr, "Provided filename: '%s'\n", filename);
-
-      exit(EXIT_FAILURE);
+      ExitWithError("Provided filename: '%s'\n", filename);
     }
 
-    // TODO: Explain 2.
-    Character line_buffer[(max_line_length * utf8_max_character_width) + 2];
+    // In bytes, what's the widest a line can be?
+    constexpr Size widest_line_w =
+      max_line_length * utf8_max_character_width;
+
+    // We add 2 to accommodate a trailing '\n' and '\0'.
+    Character line_buffer[2 + widest_line_w];
+    /*
+      The 'fgets' function always appends '\0' to the line
+      buffer, so we always need room for that byte.
+
+      'fgets' will normally include a '\n', too, but the '\n'
+      will be missing in two situations:
+
+      1. The final line of the file doesn't end with a '\n'.
+      2. The line is longer than our buffer. In this case,
+         'fgets' will truncate the line.
+
+      We always make room for both the '\n' and '\0'. If 'fgets'
+      fills our line buffer completely without including a '\n',
+      we know the line is too long--it must have been truncated.
+    */
+
+    // Which line are we on?
+    Size line_number = 1;
+
     while (fgets(line_buffer, sizeof line_buffer, t_source_file))
     {
-      Byte tokenizing_memory[needed_memory_for_tokenizing_a_line];
+      Byte tokenizing_memory[bytes_needed_to_tokenize_a_line];
       auto tokenizing_allocator =
         Allocator(tokenizing_memory, sizeof tokenizing_memory);
 
-      Render(TokenizedLine(line_buffer, &tokenizing_allocator));
+      auto tokenized_line =
+        TokenizedLine(line_buffer, line_number, &tokenizing_allocator);
+
+      Render(&tokenized_line);
+
+      line_number += 1;
     }
   } fclose(t_source_file);
 
-  // By returning 0, we tell C, "We didn't fail!"
   return 0;
 }
 
 
-void Render(struct TokenizedLine tokenized)
+void Render(const struct TokenizedLine *tokenized)
 {
-  printf("Indent level: %f\n", tokenized.indent_level);
-  printf("Token count: %lu\n", tokenized.tokens_w);
+  printf("Indent level: %zu\n", tokenized->indent_level);
+  printf("Token count: %zu\n", tokenized->tokens_w);
 
-  for (auto i = 0; i < tokenized.tokens_w; i++)
+  for (Offset i = 0; i < tokenized->tokens_w; i++)
   {
-    printf("  '%s'\n", tokenized.tokens[i]);
+    printf("  '%s'\n", tokenized->tokens[i]);
   }
 }

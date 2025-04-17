@@ -1,8 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "text.h"
 #include "common_data_types.h"
 #include "memory.h"
+#include "exit_with_error.h"
 
 
 // Copy a snippet of text.
@@ -64,8 +63,9 @@ enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle)
     return FourBytesWide;
   }
 
-  fprintf(stderr, "Invalid first byte for a UTF-8 character: %u\n", first_byte);
-  exit(EXIT_FAILURE);
+  ExitWithError(
+    "Invalid first byte for a UTF-8 character: %u\n",
+    first_byte);
 }
 
 
@@ -158,8 +158,9 @@ UTFCodepoint UTF8Codepoint(
 
     default:
     {
-      fprintf(stderr, "Invalid UTF-8 character width: %lu\n", character_bundle_w);
-      exit(EXIT_FAILURE);
+      ExitWithError(
+        "Invalid UTF-8 character width: %zu\n",
+        character_bundle_w);
     }
   }
 }

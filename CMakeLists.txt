@@ -31,6 +31,8 @@ add_executable (
   code/tokenizing.h
   code/text.c
   code/text.h
+  code/exit_with_error.c
+  code/exit_with_error.h
 )
 
 # Copy "sample.t", our test source file, into our output directory.
