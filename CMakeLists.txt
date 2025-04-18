@@ -3,11 +3,6 @@ project (T C)
 
 set (CMAKE_C_STANDARD 23)
 
-# Require GCC.
-if (NOT CMAKE_C_COMPILER_ID MATCHES "GNU")
-  message (FATAL_ERROR "T requires GCC. You're using ${CMAKE_C_COMPILER_ID}!")
-endif ()
-
 # Guess the appropriate linker flag for a 32-megabyte stack.
 if (WIN32)
   set (STACK_SIZE_FLAG "/STACK:33554432")
@@ -22,7 +17,9 @@ endif ()
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${STACK_SIZE_FLAG}")
 
 add_executable (
+  # The name of our target executable.
   t
+  # All the source files needed by that executable.
   compiler.c
   code/common_data_types.h
   code/memory.c
@@ -32,10 +29,9 @@ add_executable (
   code/text.c
   code/text.h
   code/exit_due_to_error.c
-  code/exit_due_to_error.h
-)
+  code/exit_due_to_error.h)
 
-# Grab all files from "./t_samples/".
+# Grab the paths of all files within "./t_samples/".
 file (GLOB ALL_T_SAMPLE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/t_samples/*")
 
 # Ensure a "t_samples/" directory exists in the output directory.
