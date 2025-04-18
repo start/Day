@@ -31,23 +31,23 @@ add_executable (
   code/tokenizing.h
   code/text.c
   code/text.h
-  code/exit_with_error.c
-  code/exit_with_error.h
+  code/exit_due_to_error.c
+  code/exit_due_to_error.h
 )
 
 # Grab all files from "./t_samples/".
-file(GLOB T_SAMPLE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/t_samples/*")
+file (GLOB ALL_T_SAMPLE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/t_samples/*")
 
-# Ensure the "t_samples/" directory exists in the output directory.
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/t_samples)
+# Ensure a "t_samples/" directory exists in the output directory.
+file (MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/t_samples)
 
-foreach(T_SAMPLE_FILE ${T_SAMPLE_FILES})
-  # Grab the filename for this sample file.
-  get_filename_component(T_SAMPLE_FILENAME ${T_SAMPLE_FILE} NAME)
+foreach (T_SAMPLE_FILE ${ALL_T_SAMPLE_FILES})
+  # Grab the filename for this sample T file.
+  get_filename_component (T_SAMPLE_FILENAME ${T_SAMPLE_FILE} NAME)
 
-  # Copy this sample file into the output directory.
-  configure_file(
+  # Copy the file into the output directory.
+  configure_file (
     ${T_SAMPLE_FILE}
     ${CMAKE_CURRENT_BINARY_DIR}/t_samples/${T_SAMPLE_FILENAME}
     COPYONLY)
-endforeach()
+endforeach ()

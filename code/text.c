@@ -1,13 +1,13 @@
 #include "text.h"
 #include "common_data_types.h"
 #include "memory.h"
-#include "exit_with_error.h"
+#include "exit_due_to_error.h"
 
 
-// Copy a snippet of text.
-Text CopyText(
-  // The original line of code we're extracting from.
-  Text full_text,
+// This returns a snippet of text.
+Text CopyTextSnippet(
+  // The source text we're copying from.
+  Text source,
   // The offset of the first character we're copying.
   Offset snippet_start_o,
   // The offset immediately following the final character to copy.
@@ -16,7 +16,7 @@ Text CopyText(
   struct Allocator *allocator)
 {
   // Where is the snippet we'll be copying?
-  auto copy_from = full_text + snippet_start_o;
+  auto copy_from = source + snippet_start_o;
 
   // How wide is the snippet we're copying?
   auto snippet_w =
@@ -63,7 +63,7 @@ enum UTF8CharacterWidth UTF8CharacterWidth(CharacterBundle character_bundle)
     return FourBytesWide;
   }
 
-  ExitWithError(
+  ExitDueToError(
     "Invalid first byte for a UTF-8 character: %u\n",
     first_byte);
 }
@@ -158,7 +158,7 @@ UTFCodepoint UTF8Codepoint(
 
     default:
     {
-      ExitWithError(
+      ExitDueToError(
         "Invalid UTF-8 character width: %zu\n",
         character_bundle_w);
     }

@@ -15,8 +15,8 @@ enum UTF8CharacterWidth: Size
 
 constexpr auto utf8_max_character_width = FourBytesWide;
 
-Text CopyText(
-  Text full_text,
+Text CopyTextSnippet(
+  Text source,
   Offset snippet_start_o,
   Offset just_after_snippet_end_o,
   struct Allocator *allocator);

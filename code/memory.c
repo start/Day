@@ -1,6 +1,6 @@
 #include "memory.h"
 #include "common_data_types.h"
-#include "exit_with_error.h"
+#include "exit_due_to_error.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -61,7 +61,7 @@ Memory Allocate(
   {
     // This allocator wasn't given enough memory. Let's exit our
     // program then go fix the bug.
-    ExitWithError(
+    ExitDueToError(
       "Allocator ran out of memory!\n"
       "  Requested: %zu bytes\n"
       "  Total: %zu bytes\n",

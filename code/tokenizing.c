@@ -1,13 +1,9 @@
 #include "tokenizing.h"
 #include "common_data_types.h"
-#include "text.h"
+#include "exit_due_to_error.h"
 #include "memory.h"
-#include <string.h>
-#include <stdlib.h>
+#include "text.h"
 #include <stddef.h>
-#include <stdio.h>
-
-#include "exit_with_error.h"
 
 
 YesNo IsWhitespaceOrCommentary(UTFCodepoint codepoint);
@@ -82,7 +78,7 @@ struct TokenizedLine TokenizedLine(
 
     if (next_character_o >= max_line_length)
     {
-      ExitWithError(
+      ExitDueToError(
         "Line number: %zu\n"
         "The maximum line length is %i.\n",
         line_number,
@@ -140,7 +136,7 @@ struct TokenizedLine TokenizedLine(
           {
             // This line is indented with an odd number of
             // spaces. That's a mistake.
-            ExitWithError(
+            ExitDueToError(
               "Line number: %zu\n"
               "The indent level of this line is %zu spaces. "
               "It must be a multiple of two.",
@@ -173,7 +169,7 @@ struct TokenizedLine TokenizedLine(
           //  of code, and here it is.
 
           // Let's copy it...
-          auto token = CopyText(
+          auto token = CopyTextSnippet(
             line_buffer,
             token_start_o,
             character_o,
@@ -201,8 +197,11 @@ struct TokenizedLine TokenizedLine(
     {
       case FindEndOfCurrentToken:
       {
-        // Since we're looking for the end of the current token
-        // of code, this code character isn't it. Let's move on.
+        /*
+          We're looking for the end of the current token, but
+          this actual-code character is part of the current
+          token! Let's move on.
+        */
         continue;
       }
 
@@ -235,7 +234,7 @@ struct TokenizedLine TokenizedLine(
     auto just_after_token_end = next_character_o;
 
     // Extract the token...
-    auto code_token = CopyText(
+    auto code_token = CopyTextSnippet(
       line_buffer,
       token_start_o,
       just_after_token_end,
@@ -280,7 +279,7 @@ struct TokenizedLine TokenizedLine(
     // (We don't handle quotations yet.)
     case FindEndOfQuotation:
     {
-      ExitWithError(
+      ExitDueToError(
         "Line number: %zu\n"
         "Line ended in the middle of a quotation.\n",
         line_number);
